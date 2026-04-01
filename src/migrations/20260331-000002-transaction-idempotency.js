@@ -1,5 +1,12 @@
 module.exports = {
   async up(queryInterface, Sequelize, transaction) {
+    const allTables = await queryInterface.showAllTables({ transaction });
+    const hasTransactionsTable = allTables.some((t) => {
+      const tableName = typeof t === 'string' ? t : (t.tableName || t.table_name || '');
+      return String(tableName).toLowerCase() === 'transactions';
+    });
+    if (!hasTransactionsTable) return;
+
     const table = await queryInterface.describeTable('Transactions');
 
     if (!table.idempotency_key) {
@@ -31,6 +38,13 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize, transaction) {
+    const allTables = await queryInterface.showAllTables({ transaction });
+    const hasTransactionsTable = allTables.some((t) => {
+      const tableName = typeof t === 'string' ? t : (t.tableName || t.table_name || '');
+      return String(tableName).toLowerCase() === 'transactions';
+    });
+    if (!hasTransactionsTable) return;
+
     const indexes = await queryInterface.showIndex('Transactions', { transaction });
     const hasUniqueIndex = indexes.some((idx) => idx.name === 'transactions_user_idempotency_unique');
 

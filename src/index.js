@@ -13,6 +13,9 @@ const app = createApp();
     await sequelize.authenticate();
     logger.info('Database connected');
 
+    // Ensure base tables exist on fresh deployments before running migrations.
+    await sequelize.sync({ force: false });
+
     await runMigrations();
 
     const PORT = process.env.PORT || 5050;

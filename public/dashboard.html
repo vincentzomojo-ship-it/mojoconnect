@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Moju's Data Dashboard</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" type="image/png" href="images/default-avatar.png">
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial;
+  background: linear-gradient(135deg,#f4f6f9,#e8ecf3);
+  margin:0;
+}
+
+/* LAYOUT */
+.layout{
+  display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:240px;
+  height:100vh;
+  background: rgba(246, 183, 0, 0.15);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-right: 1px solid rgba(255,255,255,0.3);
+  color:black;
+  padding:20px;
+  position:fixed;
+  top:0;
+  left:0;
+}
+.sidebar h2{
+  margin-bottom:30px;
+  transition:0.3s;
+}
+.sidebar h2:hover{
+  transform: scale(1.1);
+  letter-spacing:2px;
+}
+.sidebar ul{
+  list-style:none;
+  padding:0;
+}
+.sidebar li{
+  padding:12px;
+  margin-bottom:12px;
+  border-radius:8px;
+  cursor:pointer;
+  transition: all 0.3s ease;
+}
+.sidebar li:hover{
+  background: rgba(246, 183, 0, 0.4);
+  transform: translateX(8px);
+  box-shadow: 0 5px 15px rgba(246,183,0,0.3);
+}
+
+/* MAIN */
+.main{
+  margin-left:240px;
+  width:100%;
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 25px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  position:relative;
+  z-index:4000;
+  overflow:visible;
+}
+.header-right{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+/* BUTTONS */
+.notify, .logout{
+  cursor:pointer;
+  transition: all 0.3s ease;
+}
+.notify-wrap{
+  position:relative;
+}
+.notify{
+  background:white;
+  border:1px solid #ddd;
+  padding:8px;
+  border-radius:6px;
+  position:relative;
+  color:#111;
+}
+.notify:hover{
+  transform: scale(1.1);
+  background:#f6b700;
+  color:white;
+}
+.notify-badge{
+  position:absolute;
+  top:-6px;
+  right:-6px;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  line-height:1;
+  background:#ef4444;
+  color:#fff;
+  border:2px solid #fff;
+}
+.notify-panel{
+  display:none;
+  position:fixed;
+  top:76px;
+  right:24px;
+  width:min(90vw,340px);
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.18);
+  z-index:99999;
+  overflow:hidden;
+}
+.notify-panel.show{
+  display:block;
+  animation:cardEnter 0.2s ease both;
+}
+.notify-panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom:1px solid #f1f5f9;
+}
+.notify-panel-head h4{
+  margin:0;
+}
+.notify-clear{
+  margin-top:0;
+  padding:6px 10px;
+  background:#ef4444;
+  font-size:12px;
+}
+.notify-list{
+  max-height:260px;
+  overflow:auto;
+}
+.notify-item{
+  padding:10px 12px;
+  border-bottom:1px solid #f3f4f6;
+}
+.notify-item:last-child{
+  border-bottom:none;
+}
+.notify-item-title{
+  font-weight:700;
+  margin-bottom:2px;
+}
+.notify-item-text{
+  color:#4b5563;
+  font-size:13px;
+}
+.notify-item-time{
+  margin-top:4px;
+  font-size:12px;
+  color:#9ca3af;
+}
+.notify-empty{
+  padding:14px 12px;
+  color:#6b7280;
+  text-align:center;
+}
+.logout{
+  background:#e74c3c;
+  color:white;
+  border:none;
+  padding:8px 12px;
+  border-radius:6px;
+}
+.logout:hover{
+  transform: scale(1.05);
+  background:#c0392b;
+}
+
+/* CONTENT */
+.container{
+  padding:25px;
+}
+
+/* WELCOME CARD */
+.welcome{
+  background:linear-gradient(135deg,#f6b700,#d99a00);
+  color:white;
+  padding:25px;
+  border-radius:12px;
+  margin-bottom:25px;
+  width:100%;
+  box-sizing:border-box;
+  transition:0.3s;
+}
+.welcome:hover{
+  transform: translateY(-5px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+.stat-card{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+.stat-card:hover{
+  transform: translateY(-8px);
+  box-shadow:0 15px 30px rgba(0,0,0,0.1);
+}
+
+/* CARDS */
+.card{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  margin-top:25px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  position:relative;
+}
+.card:hover{
+  transform: translateY(-5px);
+  box-shadow:0 12px 25px rgba(0,0,0,0.1);
+}
+
+/* Unified card interactions (desktop hover + mobile tap) */
+.welcome,
+.stat-card,
+.card{
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.welcome:hover,
+.stat-card:hover,
+.card:hover,
+.welcome:active,
+.stat-card:active,
+.card:active{
+  transform: translateY(-6px);
+  box-shadow:0 12px 25px rgba(0,0,0,0.12);
+}
+
+.settings-shell{
+  overflow:hidden;
+}
+.settings-head p{
+  margin:6px 0 0;
+  color:#666;
+}
+.profile-preview{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin:18px 0 8px;
+  padding:14px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#fff6dc,#ffe29a);
+}
+.profile-preview img{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid rgba(255,255,255,0.8);
+}
+.profile-preview h4{
+  margin:0;
+}
+.profile-preview p{
+  margin:4px 0 0;
+  color:#555;
+}
+.settings-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:16px 0;
+}
+.settings-tab{
+  margin-top:0;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#eceff4;
+  color:#111;
+}
+.settings-tab.active{
+  background:#f6b700;
+  color:#fff;
+}
+.settings-section{
+  width:100%;
+  padding:18px 0;
+  border-bottom:1px solid #ececec;
+}
+.settings-section:last-child{
+  border-bottom:none;
+}
+.settings-section h3{
+  margin:0 0 10px 0;
+}
+.settings-panel{
+  display:none;
+  opacity:0;
+  transform:translateX(12px);
+}
+.settings-panel.active{
+  display:block;
+  animation:sectionSlide 0.28s ease forwards;
+}
+@keyframes sectionSlide{
+  from{ opacity:0; transform:translateX(12px); }
+  to{ opacity:1; transform:translateX(0); }
+}
+.setting-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  padding:10px 0;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.setting-row:hover{
+  background:rgba(0,0,0,0.02);
+  transform:translateX(2px);
+}
+.setting-row label{
+  min-width:180px;
+  font-weight:600;
+}
+.setting-row input[type="checkbox"]{
+  width:auto;
+  transform:scale(1.1);
+  accent-color:#f6b700;
+}
+.setting-row input:not([type="checkbox"]),
+.setting-row select,
+.setting-row button,
+.setting-row textarea{
+  width:55%;
+  margin-top:0;
+}
+.setting-row span,
+.setting-row a,
+.setting-row .btn-row{
+  width:55%;
+  text-align:left;
+}
+.setting-row textarea{
+  min-height:90px;
+  resize:vertical;
+  border-radius:10px;
+  border:1px solid #d1d5db;
+  padding:10px;
+}
+.btn-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  background:#ecfdf3;
+  color:#138a44;
+}
+[data-tip]{
+  position:relative;
+}
+[data-tip]::after{
+  content:attr(data-tip);
+  position:absolute;
+  left:0;
+  top:calc(100% + 6px);
+  background:#111;
+  color:#fff;
+  padding:4px 8px;
+  border-radius:6px;
+  font-size:12px;
+  white-space:nowrap;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(4px);
+  transition:0.2s ease;
+  z-index:50;
+}
+[data-tip]:hover::after{
+  opacity:1;
+  transform:translateY(0);
+}
+.settings-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  backdrop-filter:blur(3px);
+  z-index:2600;
+  align-items:center;
+  justify-content:center;
+}
+.settings-modal-card{
+  width:min(92vw,420px);
+  background:#fff;
+  border-radius:12px;
+  padding:18px;
+  box-shadow:0 18px 40px rgba(0,0,0,0.22);
+}
+.settings-modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:12px;
+}
+.settings-modal-actions button{
+  margin-top:0;
+}
+.toast-root{
+  position:fixed;
+  top:18px;
+  right:18px;
+  z-index:100000;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.toast{
+  min-width:260px;
+  max-width:360px;
+  color:#fff;
+  padding:12px 14px;
+  border-radius:10px;
+  box-shadow:0 14px 30px rgba(0,0,0,0.25);
+  transform:translateX(120%);
+  opacity:0;
+  animation:toastIn 0.25s ease forwards;
+}
+.toast.success{ background:#16a34a; }
+.toast.error{ background:#dc2626; }
+.toast.info{ background:#2563eb; }
+.toast.hide{
+  animation:toastOut 0.22s ease forwards;
+}
+@keyframes toastIn{
+  from{ transform:translateX(120%); opacity:0; }
+  to{ transform:translateX(0); opacity:1; }
+}
+@keyframes toastOut{
+  from{ transform:translateX(0); opacity:1; }
+  to{ transform:translateX(120%); opacity:0; }
+}
+.tx-summary{
+  margin:0;
+  padding-left:18px;
+}
+.tx-summary li{
+  margin:4px 0;
+}
+.card, .stat-card{
+  animation:cardEnter 0.35s ease both;
+}
+@keyframes cardEnter{
+  from{ opacity:0; transform:translateY(8px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+body.dark-theme{
+  background:linear-gradient(135deg,#1e293b,#0f172a);
+  color:#e5e7eb;
+}
+body.dark-theme .sidebar{
+  background:rgba(30,41,59,0.88);
+  color:#e5e7eb;
+  border-right:1px solid rgba(255,255,255,0.08);
+}
+body.dark-theme .header,
+body.dark-theme .card,
+body.dark-theme .stat-card{
+  background:#1f2937;
+  color:#e5e7eb;
+}
+body.dark-theme .notify-panel{
+  background:#111827;
+  border-color:#334155;
+}
+body.dark-theme .notify{
+  background:#0f172a;
+  border-color:#334155;
+  color:#f8fafc;
+}
+body.dark-theme .notify-panel-head{
+  border-bottom-color:#334155;
+}
+body.dark-theme .notify-item{
+  border-bottom-color:#334155;
+}
+body.dark-theme .notify-item-text{
+  color:#cbd5e1;
+}
+body.dark-theme .notify-item-time{
+  color:#94a3b8;
+}
+body.dark-theme .notify-empty{
+  color:#cbd5e1;
+}
+body.dark-theme input,
+body.dark-theme select{
+  background:#111827;
+  color:#e5e7eb;
+  border-color:#334155;
+}
+body.dark-theme textarea{
+  background:#111827;
+  color:#e5e7eb;
+  border-color:#334155;
+}
+body.dark-theme table th{
+  background:#0f172a;
+}
+body.dark-theme td{
+  border-bottom-color:#334155;
+}
+body.dark-theme .setting-row:hover{
+  background:rgba(255,255,255,0.05);
+}
+body.dark-theme .settings-head p,
+body.dark-theme .profile-preview p{
+  color:#cbd5e1;
+}
+body.dark-theme .profile-preview{
+  background:linear-gradient(135deg,#334155,#1f2937);
+}
+body.dark-theme .settings-tab{
+  background:#334155;
+  color:#e5e7eb;
+}
+body.dark-theme .settings-tab.active{
+  background:#f6b700;
+  color:#111;
+}
+body.dark-theme .settings-modal-card{
+  background:#1f2937;
+  color:#e5e7eb;
+}
+body.dark-theme .chip{
+  background:#14532d;
+  color:#dcfce7;
+}
+body.dark-theme .toast{
+  box-shadow:0 14px 30px rgba(0,0,0,0.45);
+}
+
+#galleryImage {
+  transition: opacity 0.8s ease-in-out;
+}
+
+@media (max-width: 768px){
+  .notify-panel{
+    top:90px;
+    right:12px;
+  }
+  .sidebar{
+    position:static;
+    width:100%;
+    height:auto;
+  }
+  .main{
+    margin-left:0;
+  }
+  .layout{
+    flex-direction:column;
+  }
+  .header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .stats{
+    grid-template-columns:1fr;
+  }
+  .card, .stat-card{
+    margin-top:16px;
+  }
+  .setting-row{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .setting-row input:not([type="checkbox"]),
+  .setting-row select,
+  .setting-row button,
+  .setting-row textarea,
+  .setting-row span,
+  .setting-row a{
+    width:100%;
+  }
+  .profile-preview{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+}
+
+/* BUTTONS */
+button{
+  padding:10px;
+  border:none;
+  background:#4CAF50;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+  margin-top:10px;
+  transition: all 0.3s ease;
+}
+button:hover{
+  transform: scale(1.05);
+  background:#45a049;
+}
+#clearPurchaseHistoryBtn:hover{
+  background:#c0392b !important;
+}
+
+/* INPUTS */
+input, select{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  transition:0.3s;
+}
+input:focus, select:focus{
+  border-color:#f6b700;
+  outline:none;
+  box-shadow:0 0 5px rgba(246,183,0,0.5);
+}
+
+/* TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+th{
+  background:#111;
+  color:white;
+}
+th,td{
+  padding:12px;
+  border-bottom:1px solid #ddd;
+}
+tbody tr{
+  transition:0.2s;
+}
+tbody tr:hover{
+  background:#f9f9f9;
+  transform: scale(1.01);
+}
+
+/* TRANSFER MODAL */
+#transferModal{
+  display:none;   
+  position:fixed; top:0; left:0; width:100%; height:100%;   
+  background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;  
+}
+#transferModalContent{
+  background:white;   
+  padding:20px;   
+  border-radius:12px;   
+  width:300px;   
+  position:relative;   
+  transform:translateY(100px);   
+  opacity:0;   
+  transition: all 0.3s ease;
+}
+#transferModalContent h3{
+  margin-top:0;
+}
+#transferModalContent button{
+  width:100%;
+}
+
+/* WIZARD MODAL */
+#wizardModal {
+  display: none;
+  position: fixed;
+  top:0; left:0; width:100%; height:100%;
+  backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.3);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+#wizardContent {
+  background: linear-gradient(135deg,#f6b700,#d99a00);
+  color: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  min-width: 400px;
+  max-width: 500px;
+  box-shadow:0 12px 25px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+#wizardContent h3{
+  margin-top:0;
+  text-align:center;
+}
+
+#wizardContent table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top:10px;
+}
+
+#wizardContent td{
+  padding:10px;
+  text-align:center;
+}
+
+.wizardOption {
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:#fff;
+  color:#f6b700;
+  font-weight:bold;
+  transition: all 0.3s ease;
+}
+
+.wizardOption:hover{
+  background:#f3d67a;
+}
+
+#wizardFormTable input, #wizardFormTable select {
+  width: 90%;
+  padding:8px;
+  border-radius:6px;
+  border:none;
+}
+
+#wizardBackBtn, #wizardSubmitBtn {
+  padding:8px 15px;
+  border:none;
+  border-radius:6px;
+  margin-left:5px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+#wizardBackBtn, #wizardSubmitBtn {
+  background:#fff;
+  color:#f6b700;
+}
+
+#wizardBackBtn:hover, #wizardSubmitBtn:hover{
+  background:#f3d67a;
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+<div class="sidebar">
+  <h2>MOJO</h2>
+  <ul>
+    <li id="dashboardBtn"><i class="fas fa-home"></i> Dashboard</li>
+    <li id="mtnBtn"><i class="fas fa-signal"></i> MTN Bundles</li>
+    <li id="airtelBtn"><i class="fas fa-share-alt"></i> Airtel Tigo Bundles</li>
+    <li id="telecelBtn"><i class="fas fa-sim-card"></i> Telecel Bundles</li>
+    <li id="walletBtn"><i class="fas fa-wallet"></i> Wallet</li>
+    <li id="sidebarPurchasedHistoryBtn"><i class="fas fa-exchange-alt"></i> Purchased History</li>
+    <li id="customerServiceBtn"><i class="fas fa-headset"></i> Customer Service</li>
+    <li id="settingsBtn"><i class="fas fa-cog"></i> Settings</li>
+  </ul>
+</div>
+
+<div class="main">
+<div class="header">
+  <div>
+    <h3>Welcome back, Mojo!</h3>
+  </div>
+  <div class="header-right">
+    <div class="notify-wrap">
+      <button class="notify" id="notifyBtn" aria-label="Notifications">
+        <i class="fas fa-bell"></i>
+        <span class="notify-badge" id="notifyBadge" style="display:none;">0</span>
+      </button>
+      <div class="notify-panel" id="notifyPanel">
+        <div class="notify-panel-head">
+          <h4>Notifications</h4>
+          <button id="clearNotificationsBtn" class="notify-clear">Clear all</button>
+        </div>
+        <div class="notify-list" id="notifyList">
+          <div class="notify-empty">No notifications yet.</div>
+        </div>
+      </div>
+    </div>
+    <button class="logout" id="logoutBtn">Logout</button>
+
+    <!-- AVATAR -->
+    <div id="avatarBox" style="cursor:pointer; display:inline-block; margin-left:10px;">
+      <img id="avatarImg" src="images/default-avatar.png" width="40" height="40" style="border-radius:50%;">
+    </div>
+  </div>
+
+  <div id="avatarMenu" style="display:none; position:absolute; background:white; border:1px solid #ccc; padding:10px;">
+    <img src="images/avatar1.png" width="40" height="40" style="cursor:pointer; border-radius:50%;">
+    <img src="images/avatar2.png" width="40" height="40" style="cursor:pointer; border-radius:50%;">
+  </div>
+</div>
+
+<div class="container">
+<div id="dashboardPage">
+<div class="welcome"><h2>Dashboard Overview</h2></div>
+
+<div class="stats">
+  <div class="stat-card" id="walletBalanceCard" style="display:none;">
+    <h4>Wallet Balance</h4>
+    <h2>GH₵ <span id="balance">0.00</span></h2>
+  </div>
+  <div class="stat-card">
+    <h4>Total Orders</h4>
+    <h2 id="totalOrdersValue">0</h2>
+  </div>
+  <div class="stat-card">
+    <h4>Total Spent</h4>
+    <h2>GH₵ <span id="totalSpentValue">0.00</span></h2>
+  </div>
+</div>
+
+<div class="card" id="addFundsCard" style="display:none;">
+  <h3>Add Funds</h3>
+  <input id="fundAmount" placeholder="Enter amount">
+  <button id="fundBtn">Add Funds</button>
+  <p id="fundMessage"></p>
+</div>
+
+<!-- NEW IMAGE CARD -->
+<div class="card" id="imageCard" style="padding:0; overflow:hidden; height:250px;">
+  <img id="galleryImage" src="images/bundles-bg.jpg" style="width:100%; height:100%; object-fit:cover; display:block;">
+</div>
+
+<!-- Quick Actions Block -->
+<div class="card">
+  <h3>Quick Actions</h3>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+
+    <button id="transfersBtn" style="flex:1; background:#f6b700;">
+      <i class="fas fa-exchange-alt"></i><br>
+      Transfers
+    </button>
+
+    <button id="sendMoneyBtn" style="flex:2; background:#f6b700;">
+      <i class="fas fa-paper-plane"></i><br>
+      Send Money
+    </button>
+
+    <button id="airtimeBtn" style="flex:1; background:#f6b700;">
+      <i class="fas fa-mobile-alt"></i><br>
+      Airtime Top-up
+    </button>
+
+    <button id="payBillsBtn" style="flex:1; background:#f6b700;">
+      <i class="fas fa-file-invoice"></i><br>
+      Pay Bills
+    </button>
+
+  </div>
+
+  <p id="transferMessage"></p>
+</div>
+
+<!-- Transfers Table (hidden initially) -->
+<div class="card" id="transfersCard" style="display:none;">
+  <h3>Transfers History</h3>
+  <table id="transfersTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Amount (GH₵)</th>
+        <th>Status</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div style="display:flex; justify-content:space-between; margin-top:10px;">
+    <div style="display:flex; gap:5px; width:48%;">
+      <button id="transferMoreBtn" style="width:48%;">More</button>
+      <button id="transferLessBtn" style="width:48%; display:none;">Less</button>
+    </div>
+    <button id="clearTransfersHistoryBtn" style="background:#e74c3c; width:48%;">Clear Transfers History</button>
+  </div>
+</div>
+
+<!-- Wizard Modal for Quick Actions -->
+<div id="wizardModal">
+  <div id="wizardContent">
+    <h3 id="wizardTitle">Action</h3>
+    <div id="wizardStep1" class="wizardStep">
+      <p>Select Type:</p>
+      <table>
+        <tr>
+          <td><button class="wizardOption" data-type="Mobile Money">Mobile Money</button></td>
+          <td><button class="wizardOption" data-type="Bank">Bank</button></td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="wizardStep2" class="wizardStep" style="display:none;">
+      <table id="wizardFormTable"></table>
+      <div style="margin-top:10px; text-align:right;">
+        <button id="wizardBackBtn">Back</button>
+        <button id="wizardSubmitBtn">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Purchased History -->
+<div class="card" id="purchaseHistoryCard" style="display:none;">
+  <h3>Purchased History</h3>
+  <table id="purchaseHistoryTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div style="display:flex; justify-content:space-between; margin-top:10px;">
+    <div style="display:flex; gap:5px; width:48%;">
+      <button id="purchaseMoreBtn" style="width:48%;">More</button>
+      <button id="purchaseLessBtn" style="width:48%; display:none;">Less</button>
+    </div>
+    <button id="clearPurchaseHistoryBtn" style="background:#e74c3c; width:48%;">Clear Purchased History</button>
+  </div>
+</div>
+
+</div>
+<div id="settingsPage" style="display:none;">
+  <div class="card settings-shell">
+    <div class="settings-head">
+      <h2>Settings</h2>
+      <p>Manage account, security, preferences, and wallet controls.</p>
+    </div>
+
+    <div class="profile-preview" id="profilePreviewCard">
+      <img id="settingsAvatarPreview" src="images/default-avatar.png" alt="Profile Preview">
+      <div>
+        <h4 id="settingsPreviewName">Mojo User</h4>
+        <p id="settingsPreviewEmail">user@example.com</p>
+        <span class="chip" id="settingsThemeChip">Light Mode</span>
+      </div>
+    </div>
+
+    <div class="settings-tabs" id="settingsTabs">
+      <button class="settings-tab active" data-target="profileSection">Profile</button>
+      <button class="settings-tab" data-target="securitySection">Security</button>
+      <button class="settings-tab" data-target="notificationsSection">Notifications</button>
+      <button class="settings-tab" data-target="appearanceSection">Appearance</button>
+      <button class="settings-tab" data-target="languageSection">Language</button>
+      <button class="settings-tab" data-target="walletSection">Wallet</button>
+      <button class="settings-tab" data-target="privacySection">Privacy</button>
+      <button class="settings-tab" data-target="preferencesSection">Preferences</button>
+      <button class="settings-tab" data-target="actionsSection">Actions</button>
+    </div>
+
+    <div class="settings-section settings-panel active" id="profileSection">
+      <h3>Profile</h3>
+      <div class="setting-row">
+        <label for="settingsAvatarUrl">Avatar URL</label>
+        <input id="settingsAvatarUrl" data-tip="Paste image link for your avatar" type="text" placeholder="https://...">
+      </div>
+      <div class="setting-row">
+        <label for="settingsAvatarUpload">Upload Avatar</label>
+        <input id="settingsAvatarUpload" data-tip="Upload a local image file" type="file" accept="image/*">
+      </div>
+      <div class="setting-row">
+        <label for="settingsUsername">Username</label>
+        <input id="settingsUsername" data-tip="Displayed in your profile" type="text" placeholder="Enter username">
+      </div>
+      <div class="setting-row">
+        <label for="settingsEmail">Email</label>
+        <input id="settingsEmail" data-tip="Used for account alerts" type="email" placeholder="Enter email">
+      </div>
+    </div>
+
+    <div class="settings-section settings-panel" id="securitySection">
+      <h3>Account & Security</h3>
+      <div class="setting-row">
+        <label for="settingsCurrentPassword">Current Password</label>
+        <input id="settingsCurrentPassword" type="password" placeholder="Current password">
+      </div>
+      <div class="setting-row">
+        <label for="settingsNewPassword">New Password</label>
+        <input id="settingsNewPassword" type="password" placeholder="New password">
+      </div>
+      <div class="setting-row">
+        <label for="settingsConfirmPassword">Confirm Password</label>
+        <input id="settingsConfirmPassword" type="password" placeholder="Confirm new password">
+      </div>
+      <div class="setting-row">
+        <label for="settingsTwoFactor">Two-Factor Authentication</label>
+        <input id="settingsTwoFactor" data-tip="Adds extra login security" type="checkbox">
+      </div>
+    </div>
+
+    <div class="settings-section settings-panel" id="notificationsSection">
+      <h3>Notifications</h3>
+      <div class="setting-row">
+        <label for="settingsNotificationsToggle">Transaction Alerts</label>
+        <input id="settingsNotificationsToggle" type="checkbox">
+      </div>
+      <div class="setting-row">
+        <label for="settingsBundleAlerts">Bundle Purchase Alerts</label>
+        <input id="settingsBundleAlerts" type="checkbox">
+      </div>
+      <div class="setting-row">
+        <label for="settingsEmailAlerts">Email Alerts</label>
+        <input id="settingsEmailAlerts" type="checkbox">
+      </div>
+      <div class="setting-row">
+        <label for="settingsSmsToggle">SMS Alerts</label>
+        <input id="settingsSmsToggle" type="checkbox">
+      </div>
+    </div>
+
+    <div class="settings-section settings-panel" id="appearanceSection">
+      <h3>Appearance / Theme</h3>
+      <div class="setting-row">
+        <label for="settingsDarkModeToggle">Dark Mode</label>
+        <input id="settingsDarkModeToggle" type="checkbox">
+      </div>
+      <div class="setting-row">
+        <label for="settingsAccentColor">Accent Color</label>
+        <select id="settingsAccentColor">
+          <option value="#f6b700">Gold</option>
+          <option value="#1d4ed8">Blue</option>
+          <option value="#059669">Green</option>
+          <option value="#dc2626">Red</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-section settings-panel" id="languageSection">
+      <h3>Language / Region</h3>
+      <div class="setting-row">
+        <label for="settingsLanguage">Language</label>
+        <select id="settingsLanguage">
+          <option value="English">English</option>
+          <option value="French">French</option>
+          <option value="Spanish">Spanish</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <label for="settingsRegion">Region</label>
+        <select id="settingsRegion">
+          <option value="Ghana">Ghana</option>
+          <option value="Nigeria">Nigeria</option>
+          <option value="Kenya">Kenya</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-section settings-panel" id="walletSection">
+      <h3>Payment / Wallet</h3>
+      <div class="setting-row">
+        <label for="settingsPreferredPayment">Preferred Payment</label>
+        <select id="settingsPreferredPayment">
+          <option value="Wallet">Wallet</option>
+          <option value="Mobile Money">Mobile Money</option>
+          <option value="Bank Card">Bank Card</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <label for="settingsAutoTopUp">Auto Top-up</label>
+        <input id="settingsAutoTopUp" type="checkbox">
+      </div>
+      <div class="setting-row">
+        <label>Linked Payment Methods</label>
+        <div class="btn-row">
+          <button id="linkPaymentBtn" data-tip="Link a new payment method">Link Method</button>
+          <button id="unlinkPaymentBtn" style="background:#9ca3af;" data-tip="Remove linked payment method">Unlink Method</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <label>Last Transactions Summary</label>
+        <ul id="settingsTxSummary" class="tx-summary">
+          <li>No transactions yet.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="settings-section settings-panel" id="privacySection">
+      <h3>Privacy</h3>
+      <div class="setting-row">
+        <label for="settingsProfileVisibility">Profile Visibility</label>
+        <select id="settingsProfileVisibility">
+          <option value="Private">Private</option>
+          <option value="Contacts">Contacts</option>
+          <option value="Public">Public</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <label for="settingsAnalytics">Share Analytics</label>
+        <input id="settingsAnalytics" type="checkbox">
+      </div>
+    </div>
+
+    <div class="settings-section settings-panel" id="preferencesSection">
+      <h3>Preferences</h3>
+      <div class="setting-row">
+        <label for="settingsDefaultTxType">Default Transaction Type</label>
+        <select id="settingsDefaultTxType">
+          <option value="All">All</option>
+          <option value="Send Money">Send Money</option>
+          <option value="Airtime Top-up">Airtime Top-up</option>
+          <option value="Bundle Purchase">Bundle Purchase</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <label for="settingsDefaultView">Default Dashboard View</label>
+        <select id="settingsDefaultView">
+          <option value="Overview">Overview</option>
+          <option value="Purchased History">Purchased History</option>
+          <option value="Wallet">Wallet</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-section settings-panel" id="actionsSection">
+      <h3>Actions</h3>
+      <div class="setting-row">
+        <label>Save Settings</label>
+        <button id="settingsSaveBtn">Save Changes</button>
+      </div>
+      <div class="setting-row">
+        <label>Reset Settings</label>
+        <button id="settingsResetBtn" style="background:#f39c12;">Reset</button>
+      </div>
+      <div class="setting-row">
+        <label>Clear Local Data</label>
+        <button id="clearDataBtn" style="background:#7c3aed;">Clear Data</button>
+      </div>
+      <div class="setting-row">
+        <label>Delete Account</label>
+        <button id="deleteAccountBtn" style="background:#b91c1c;">Delete Account</button>
+      </div>
+      <div class="setting-row">
+        <label>Logout</label>
+        <button id="settingsLogoutBtn" style="background:#e74c3c;">Logout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="customerServicePage" style="display:none;">
+  <div class="card settings-shell">
+    <div class="settings-head">
+      <h2>Customer Service</h2>
+      <p>Submit complaints and contact support.</p>
+    </div>
+
+    <div class="settings-section">
+      <h3>Submit Complaint</h3>
+      <div class="setting-row">
+        <label for="complaintIssueType">Complaint Type</label>
+        <select id="complaintIssueType">
+          <option value="Technical">Technical</option>
+          <option value="Billing">Billing</option>
+          <option value="Transaction">Transaction</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <label for="complaintMessage">Message</label>
+        <textarea id="complaintMessage" placeholder="Describe your issue..."></textarea>
+      </div>
+      <div class="setting-row">
+        <label>Submit Complaint</label>
+        <button id="submitComplaintBtn" style="background:#0ea5e9;">Send to Customer Service</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Support / About</h3>
+      <div class="setting-row">
+        <label>FAQ</label>
+        <a href="#" id="faqLink">Open FAQ</a>
+      </div>
+      <div class="setting-row">
+        <label>Contact Support</label>
+        <a href="mailto:support@mojo.com">support@mojo.com</a>
+      </div>
+      <div class="setting-row">
+        <label>App Version</label>
+        <span>v1.0.0</span>
+      </div>
+      <div class="setting-row">
+        <label>Report a Bug</label>
+        <button id="reportBugBtn" style="background:#2563eb;">Report Bug</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="settings-modal" id="clearDataModal">
+  <div class="settings-modal-card">
+    <h3>Clear Local Data?</h3>
+    <p>This removes saved settings and avatar from this browser only.</p>
+    <div class="settings-modal-actions">
+      <button class="close-modal-btn" data-modal="clearDataModal" style="background:#9ca3af;">Cancel</button>
+      <button id="confirmClearDataBtn" style="background:#7c3aed;">Clear Data</button>
+    </div>
+  </div>
+</div>
+
+<div class="settings-modal" id="deleteAccountModal">
+  <div class="settings-modal-card">
+    <h3>Delete Account?</h3>
+    <p>This action is irreversible. Use carefully.</p>
+    <div class="settings-modal-actions">
+      <button class="close-modal-btn" data-modal="deleteAccountModal" style="background:#9ca3af;">Cancel</button>
+      <button id="confirmDeleteAccountBtn" style="background:#b91c1c;">Delete Account</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastRoot" class="toast-root"></div>
+
+</div>
+</div>
+</div>
+</div>
+
+<script src="dashboard.js"></script>
+<script src="mtn.js"></script>
+<script src="airtel.js"></script>
+<script src="telecel.js"></script>
+
+</body>
+</html>

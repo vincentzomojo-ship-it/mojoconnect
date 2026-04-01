@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: mojoconnect
+    env: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_HOST
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: ADMIN_MASTER_PASSWORD
+        sync: false
+      - key: PAYSTACK_SECRET
+        sync: false
+      - key: PAYSTACK_PUBLIC
+        sync: false
+      - key: MIN_TOPUP_AMOUNT
+        value: 4
+      - key: PAYSTACK_CALLBACK_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false

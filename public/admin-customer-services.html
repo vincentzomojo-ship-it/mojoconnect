@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Customer Service</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    body{
+      background:linear-gradient(165deg,#eef2ff,#f8fafc);
+      color:#0f172a;
+    }
+    .shell{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:240px 1fr;
+    }
+    .side{
+      background:#0f172a;
+      color:#cbd5e1;
+      padding:18px;
+    }
+    .side h2{
+      margin-bottom:18px;
+      font-size:18px;
+    }
+    .side a{
+      display:block;
+      text-decoration:none;
+      color:#cbd5e1;
+      padding:10px 12px;
+      border-radius:8px;
+      margin-bottom:8px;
+      background:rgba(255,255,255,0.04);
+    }
+    .side a:hover{
+      background:rgba(59,130,246,0.2);
+      color:#fff;
+    }
+    .main{
+      padding:18px 20px 24px;
+    }
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:14px;
+    }
+    .top h1{
+      font-size:22px;
+    }
+    .top small{
+      display:block;
+      margin-top:4px;
+      color:#64748b;
+    }
+    .btns{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:none;
+      border-radius:8px;
+      color:#fff;
+      cursor:pointer;
+      font-weight:700;
+      padding:9px 12px;
+    }
+    .blue{ background:#2563eb; }
+    .green{ background:#16a34a; }
+    .red{ background:#dc2626; }
+    .gray{ background:#475569; }
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .kpi{
+      background:#fff;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      padding:12px;
+      box-shadow:0 8px 18px rgba(2,6,23,0.05);
+    }
+    .kpi h4{
+      color:#64748b;
+      font-size:13px;
+      margin-bottom:6px;
+    }
+    .kpi h2{
+      font-size:24px;
+    }
+    .card{
+      background:#fff;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      padding:12px;
+      box-shadow:0 8px 18px rgba(2,6,23,0.05);
+    }
+    .filters{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    input, select{
+      border:1px solid #cbd5e1;
+      border-radius:8px;
+      padding:8px 10px;
+    }
+    input:focus, select:focus{
+      outline:none;
+      border-color:#3b82f6;
+      box-shadow:0 0 0 3px rgba(59,130,246,0.15);
+    }
+    .table-wrap{
+      overflow:auto;
+      max-height:500px;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+    th,td{
+      border-bottom:1px solid #edf2f7;
+      padding:9px 8px;
+      text-align:left;
+      vertical-align:top;
+    }
+    th{
+      background:#0f172a;
+      color:#fff;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:0.6px;
+    }
+    .chip{
+      display:inline-block;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      padding:4px 9px;
+    }
+    .pending{ background:#fef3c7; color:#92400e; }
+    .resolved{ background:#dcfce7; color:#166534; }
+    .btn-sm{
+      padding:6px 9px;
+      font-size:12px;
+      margin-right:6px;
+      margin-bottom:4px;
+    }
+    .empty{
+      padding:14px;
+      color:#64748b;
+      font-style:italic;
+    }
+    @media (max-width: 900px){
+      .shell{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side">
+      <h2>Mojo Admin</h2>
+      <a href="/admin.html">Admin Dashboard</a>
+      <a href="/admin-customer-services.html">Customer Service</a>
+      <a href="/dashboard.html">User Dashboard</a>
+    </aside>
+    <main class="main">
+      <div class="top">
+        <div>
+          <h1>Customer Service Queue</h1>
+          <small id="lastUpdated">Last updated: -</small>
+        </div>
+        <div class="btns">
+          <button class="gray" id="refreshBtn">Refresh</button>
+          <button class="green" id="exportBtn">Export CSV</button>
+          <button class="red" id="clearResolvedBtn">Clear Resolved</button>
+          <button class="blue" id="backBtn">Back</button>
+        </div>
+      </div>
+
+      <section class="kpis">
+        <div class="kpi"><h4>Total Tickets</h4><h2 id="totalTickets">0</h2></div>
+        <div class="kpi"><h4>Pending</h4><h2 id="pendingTickets">0</h2></div>
+        <div class="kpi"><h4>Resolved</h4><h2 id="resolvedTickets">0</h2></div>
+        <div class="kpi"><h4>Today</h4><h2 id="todayTickets">0</h2></div>
+      </section>
+
+      <section class="card">
+        <div class="filters">
+          <input id="searchInput" placeholder="Search user/type/message">
+          <select id="statusFilter">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <select id="typeFilter">
+            <option value="all">All Types</option>
+            <option value="Technical">Technical</option>
+            <option value="Billing">Billing</option>
+            <option value="Transaction">Transaction</option>
+            <option value="General">General</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table id="csTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>User</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Message</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+const API = window.location.origin;
+const ADMIN_MASTER_KEY = "adminMasterPassword";
+const token = localStorage.getItem("token");
+let tickets = [];
+
+if(!token){
+  window.location.href = "/login.html";
+}
+
+function authHeaders(base = {}){
+  const headers = { ...base };
+  const masterPassword = sessionStorage.getItem(ADMIN_MASTER_KEY);
+  if(masterPassword){
+    headers["x-admin-master-password"] = masterPassword;
+  }
+  headers.Authorization = "Bearer " + token;
+  return headers;
+}
+
+async function apiFetch(path, options = {}){
+  const res = await fetch(API + path, options);
+  if(res.status === 401){
+    const data = await res.clone().json().catch(()=>({}));
+    if(String(data.message || "").toLowerCase().includes("master password")){
+      alert("Invalid or missing admin master password.");
+      sessionStorage.removeItem(ADMIN_MASTER_KEY);
+      window.location.href = "/admin.html";
+    }else{
+      localStorage.removeItem("token");
+      window.location.href = "/login.html";
+    }
+    throw new Error("Unauthorized");
+  }
+  return res;
+}
+
+function toCsv(rows){
+  if(!rows.length) return "";
+  const headers = Object.keys(rows[0]);
+  const escaped = rows.map(row =>
+    headers.map(h => `"${String(row[h] ?? "").replace(/"/g, '""')}"`).join(",")
+  );
+  return [headers.join(","), ...escaped].join("\n");
+}
+
+function downloadCsv(filename, rows){
+  const csv = toCsv(rows);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+function isToday(dateValue){
+  if(!dateValue) return false;
+  const d = new Date(dateValue);
+  if(Number.isNaN(d.getTime())) return false;
+  const now = new Date();
+  return d.getFullYear() === now.getFullYear()
+    && d.getMonth() === now.getMonth()
+    && d.getDate() === now.getDate();
+}
+
+function updateStats(rows){
+  const pending = rows.filter(t => String(t.status || "").toLowerCase() === "pending").length;
+  const resolved = rows.length - pending;
+  const today = rows.filter(t => isToday(t.createdAt)).length;
+  document.getElementById("totalTickets").innerText = String(rows.length);
+  document.getElementById("pendingTickets").innerText = String(pending);
+  document.getElementById("resolvedTickets").innerText = String(resolved);
+  document.getElementById("todayTickets").innerText = String(today);
+}
+
+function getFiltered(){
+  const search = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+  const statusFilter = document.getElementById("statusFilter").value;
+  const typeFilter = document.getElementById("typeFilter").value;
+
+  return tickets.filter(t => {
+    const status = String(t.status || "Pending").toLowerCase();
+    const type = String(t.issue_type || "General");
+    const user = t.User?.email || t.user_email_snapshot || "";
+    const text = `${user} ${type} ${t.message || ""}`.toLowerCase();
+
+    const matchSearch = !search || text.includes(search);
+    const matchStatus = statusFilter === "all" || status === statusFilter;
+    const matchType = typeFilter === "all" || type === typeFilter;
+    return matchSearch && matchStatus && matchType;
+  });
+}
+
+function render(){
+  updateStats(tickets);
+  document.getElementById("lastUpdated").innerText = `Last updated: ${new Date().toLocaleString()}`;
+
+  const filtered = getFiltered();
+  const tbody = document.querySelector("#csTable tbody");
+  tbody.innerHTML = "";
+
+  if(!filtered.length){
+    tbody.innerHTML = `<tr><td colspan="6" class="empty">No tickets found.</td></tr>`;
+    return;
+  }
+
+  filtered.forEach((t) => {
+    const status = String(t.status || "Pending");
+    const statusClass = status.toLowerCase() === "resolved" ? "resolved" : "pending";
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${new Date(t.createdAt).toLocaleString()}</td>
+      <td>${t.User?.email || t.user_email_snapshot || "-"}</td>
+      <td>${t.issue_type || "General"}</td>
+      <td><span class="chip ${statusClass}">${status}</span></td>
+      <td>${t.message || "-"}</td>
+      <td>
+        <button class="btn-sm green" data-action="resolve" data-id="${t.id}">Resolve</button>
+        <button class="btn-sm gray" data-action="reopen" data-id="${t.id}">Reopen</button>
+        <button class="btn-sm red" data-action="delete" data-id="${t.id}">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderApiError(message){
+  tickets = [];
+  updateStats(tickets);
+  const tbody = document.querySelector("#csTable tbody");
+  tbody.innerHTML = `<tr><td colspan="6" class="empty">${message}</td></tr>`;
+}
+
+async function loadTickets(){
+  try{
+    const res = await apiFetch("/admin/support-tickets", {
+      headers: authHeaders()
+    });
+    const data = await res.json();
+    if(!res.ok){
+      renderApiError(data.message || "Failed to load tickets from server.");
+      return;
+    }
+    tickets = data.tickets || [];
+    render();
+  }catch(err){
+    if(err.message !== "Unauthorized"){
+      renderApiError("Support ticket API unavailable. Check server and try refresh.");
+    }
+  }
+}
+
+async function updateTicketStatus(id, status){
+  const res = await apiFetch(`/admin/support-tickets/${id}/status`, {
+    method: "PATCH",
+    headers: authHeaders({ "Content-Type":"application/json" }),
+    body: JSON.stringify({ status })
+  });
+  if(!res.ok){
+    const data = await res.json().catch(()=>({}));
+    alert(data.message || "Failed to update ticket");
+  }
+}
+
+async function deleteTicket(id){
+  const res = await apiFetch(`/admin/support-tickets/${id}`, {
+    method: "DELETE",
+    headers: authHeaders()
+  });
+  if(!res.ok){
+    const data = await res.json().catch(()=>({}));
+    alert(data.message || "Failed to delete ticket");
+  }
+}
+
+document.getElementById("csTable").addEventListener("click", async (e)=>{
+  const btn = e.target.closest("button[data-action]");
+  if(!btn) return;
+  const action = btn.getAttribute("data-action");
+  const id = btn.getAttribute("data-id");
+
+  if(action === "resolve"){
+    await updateTicketStatus(id, "Resolved");
+  }else if(action === "reopen"){
+    await updateTicketStatus(id, "Pending");
+  }else if(action === "delete"){
+    if(!confirm("Delete this ticket?")) return;
+    await deleteTicket(id);
+  }
+  await loadTickets();
+});
+
+document.getElementById("searchInput").addEventListener("input", render);
+document.getElementById("statusFilter").addEventListener("change", render);
+document.getElementById("typeFilter").addEventListener("change", render);
+document.getElementById("refreshBtn").addEventListener("click", loadTickets);
+
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  const rows = getFiltered().map(t => ({
+    date: new Date(t.createdAt).toLocaleString(),
+    user: t.User?.email || t.user_email_snapshot || "",
+    type: t.issue_type || "",
+    status: t.status || "",
+    message: t.message || ""
+  }));
+  downloadCsv("customer-service-tickets.csv", rows);
+});
+
+document.getElementById("clearResolvedBtn").addEventListener("click", async ()=>{
+  if(!confirm("Clear all resolved tickets?")) return;
+  const resolved = tickets.filter(t => String(t.status || "").toLowerCase() === "resolved");
+  for(const t of resolved){
+    await deleteTicket(t.id);
+  }
+  await loadTickets();
+});
+
+document.getElementById("backBtn").addEventListener("click", ()=>{
+  window.location.href = "/admin.html";
+});
+
+if(!sessionStorage.getItem(ADMIN_MASTER_KEY)){
+  alert("Please unlock admin dashboard first.");
+  window.location.href = "/admin.html";
+}else{
+  loadTickets();
+}
+</script>
+</body>
+</html>

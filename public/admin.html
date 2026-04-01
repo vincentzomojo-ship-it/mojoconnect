@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mojo Connect Admin</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+  background:linear-gradient(160deg,#eef2ff,#f8fafc);
+  color:#0f172a;
+}
+
+.admin-shell{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:260px 1fr;
+}
+
+.sidebar{
+  background:#0f172a;
+  color:#e2e8f0;
+  padding:24px 18px;
+  border-right:1px solid rgba(255,255,255,0.08);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:24px;
+}
+
+.brand-dot{
+  width:12px;
+  height:12px;
+  border-radius:999px;
+  background:#22c55e;
+  box-shadow:0 0 0 6px rgba(34,197,94,0.15);
+}
+
+.brand h2{
+  font-size:18px;
+}
+
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.menu a{
+  color:#cbd5e1;
+  text-decoration:none;
+  padding:10px 12px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.04);
+  transition:0.2s ease;
+}
+
+.menu a:hover{
+  background:rgba(59,130,246,0.2);
+  color:#fff;
+}
+
+.main{
+  padding:20px 24px 30px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.topbar h1{
+  font-size:24px;
+}
+
+.topbar small{
+  display:block;
+  margin-top:4px;
+  color:#64748b;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+button{
+  border:none;
+  border-radius:8px;
+  padding:9px 12px;
+  cursor:pointer;
+  font-weight:700;
+  color:#fff;
+}
+
+.btn-blue{ background:#2563eb; }
+.btn-green{ background:#16a34a; }
+.btn-red{ background:#dc2626; }
+.btn-gray{ background:#475569; }
+
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.kpi{
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  padding:14px;
+  box-shadow:0 8px 18px rgba(2,6,23,0.05);
+}
+
+.kpi h4{
+  color:#475569;
+  font-size:13px;
+  margin-bottom:7px;
+}
+
+.kpi h2{
+  font-size:24px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  padding:14px;
+  box-shadow:0 8px 18px rgba(2,6,23,0.05);
+}
+
+.card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+  gap:8px;
+}
+
+.card h3{
+  font-size:17px;
+}
+
+.controls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+input, select{
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  padding:8px 10px;
+}
+
+input:focus, select:focus{
+  outline:none;
+  border-color:#3b82f6;
+  box-shadow:0 0 0 3px rgba(59,130,246,0.15);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+
+th, td{
+  border-bottom:1px solid #edf2f7;
+  padding:9px 8px;
+  text-align:left;
+}
+
+th{
+  background:#0f172a;
+  color:#fff;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.6px;
+}
+
+.chip{
+  display:inline-block;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  padding:4px 9px;
+}
+
+.chip.active{ background:#dcfce7; color:#166534; }
+.chip.suspended{ background:#fee2e2; color:#991b1b; }
+.chip.completed{ background:#dcfce7; color:#166534; }
+.chip.pending{ background:#fef3c7; color:#92400e; }
+.chip.failed{ background:#fee2e2; color:#991b1b; }
+
+.table-wrap{
+  overflow:auto;
+  max-height:380px;
+}
+
+.empty{
+  padding:14px;
+  color:#64748b;
+  font-style:italic;
+}
+
+.quick-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:8px;
+}
+
+.quick-btn{
+  background:#f8fafc;
+  color:#0f172a;
+  border:1px solid #e2e8f0;
+  padding:12px;
+  border-radius:10px;
+  text-align:left;
+  font-weight:700;
+}
+
+.quick-btn:hover{
+  background:#eff6ff;
+  border-color:#bfdbfe;
+}
+
+@media (max-width: 980px){
+  .admin-shell{
+    grid-template-columns:1fr;
+  }
+  .sidebar{
+    padding:14px;
+  }
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <h2>Mojo Admin Console</h2>
+    </div>
+    <nav class="menu">
+      <a href="#overviewSection">Overview</a>
+      <a href="#usersSection">Users Management</a>
+      <a href="#transactionsSection">Transactions</a>
+      <a href="#supportSection">Customer Service</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <small id="adminNow">Ready</small>
+      </div>
+      <div class="actions">
+        <button class="btn-gray" id="refreshAdminBtn">Refresh</button>
+        <button class="btn-blue" id="customerServiceAdminBtn">Customer Service</button>
+        <button class="btn-red" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <section id="overviewSection" class="kpis">
+      <div class="kpi"><h4>Total Users</h4><h2 id="totalUsers">0</h2></div>
+      <div class="kpi"><h4>Active Users</h4><h2 id="activeUsers">0</h2></div>
+      <div class="kpi"><h4>Suspended Users</h4><h2 id="suspendedUsers">0</h2></div>
+      <div class="kpi"><h4>Total Transactions</h4><h2 id="totalTransactions">0</h2></div>
+      <div class="kpi"><h4>Total Revenue</h4><h2>GH₵ <span id="totalRevenue">0.00</span></h2></div>
+      <div class="kpi"><h4>Total Wallet Balance</h4><h2>GH₵ <span id="totalWalletBalance">0.00</span></h2></div>
+      <div class="kpi"><h4>Pending Tickets</h4><h2 id="pendingTickets">0</h2></div>
+      <div class="kpi"><h4>Resolved Tickets</h4><h2 id="resolvedTickets">0</h2></div>
+    </section>
+
+    <section class="card" id="supportSection" style="margin-bottom:14px;">
+      <div class="card-head">
+        <h3>Customer Service Snapshot</h3>
+        <button class="btn-blue" id="openSupportQueueBtn">Open Full Queue</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>User</th>
+              <th>Type</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="supportTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card" id="usersSection">
+        <div class="card-head">
+          <h3>Users Management</h3>
+          <button class="btn-green" id="exportUsersBtn">Export Users CSV</button>
+        </div>
+        <div class="controls">
+          <input id="userSearchInput" placeholder="Search by email/username">
+          <select id="userStatusFilter">
+            <option value="all">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Wallet</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="transactionsSection">
+        <div class="card-head">
+          <h3>Transactions</h3>
+          <button class="btn-green" id="exportTransactionsBtn">Export Transactions CSV</button>
+        </div>
+        <div class="controls">
+          <input id="txSearchInput" placeholder="Search type/user/status">
+          <select id="txStatusFilter">
+            <option value="all">All Statuses</option>
+            <option value="completed">Completed</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="transactionsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="card-head"><h3>Quick Actions</h3></div>
+      <div class="quick-grid">
+        <button class="quick-btn" id="quickRefreshBtn">Refresh All Data</button>
+        <button class="quick-btn" id="quickUsersCsvBtn">Download Users CSV</button>
+        <button class="quick-btn" id="quickTxCsvBtn">Download Transactions CSV</button>
+        <button class="quick-btn" id="quickOpenSupportBtn">Open Customer Service Queue</button>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="admin.js"></script>
+</body>
+</html>

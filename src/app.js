@@ -18,7 +18,6 @@ function validateSecurityEnv() {
   const failures = [];
   const jwtSecret = process.env.JWT_SECRET || '';
   const sessionSecret = process.env.SESSION_SECRET || '';
-  const adminMasterPassword = process.env.ADMIN_MASTER_PASSWORD || '';
 
   if (!jwtSecret || jwtSecret.length < 16 || ['secret', 'jwtsecret'].includes(jwtSecret.toLowerCase())) {
     failures.push('JWT_SECRET must be set and at least 16 characters (not a default value).');
@@ -26,10 +25,6 @@ function validateSecurityEnv() {
 
   if (!sessionSecret || sessionSecret.length < 16 || sessionSecret.toLowerCase() === 'keyboard cat') {
     failures.push("SESSION_SECRET must be set and at least 16 characters (not 'keyboard cat').");
-  }
-
-  if (!adminMasterPassword || adminMasterPassword.length < 12) {
-    failures.push('ADMIN_MASTER_PASSWORD must be set and at least 12 characters.');
   }
 
   if (failures.length) {

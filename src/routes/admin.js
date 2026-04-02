@@ -7,20 +7,6 @@ const { authenticate, authorizeAdmin } = require('../middleware/auths');
 router.use(authenticate);
 router.use(authorizeAdmin);
 
-// Master password guard (simple temporary gate for admin APIs).
-router.use((req, res, next) => {
-  const expected = process.env.ADMIN_MASTER_PASSWORD || "";
-  if (!expected) {
-    return res.status(503).json({ message: "Admin master password is not configured on server" });
-  }
-
-  const provided = req.headers["x-admin-master-password"];
-  if (String(provided || "") !== String(expected)) {
-    return res.status(401).json({ message: "Invalid admin master password" });
-  }
-  next();
-});
-
 // Only attach routes IF functions exist
 router.get('/stats', adminController.getAdminStats || ((req, res) => {
   res.status(501).json({ message: "Stats not implemented" });

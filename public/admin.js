@@ -1,6 +1,5 @@
 const API = window.location.origin;
 const token = localStorage.getItem("token");
-const ADMIN_MASTER_KEY = "adminMasterPassword";
 
 let allUsers = [];
 let allTransactions = [];
@@ -12,10 +11,6 @@ if(!token){
 
 function authHeaders(base = {}){
   const headers = { ...base };
-  const masterPassword = sessionStorage.getItem(ADMIN_MASTER_KEY);
-  if(masterPassword){
-    headers["x-admin-master-password"] = masterPassword;
-  }
   if(token){
     headers.Authorization = "Bearer " + token;
   }
@@ -49,7 +44,6 @@ function downloadCsv(filename, rows){
 }
 
 function logout(){
-  sessionStorage.removeItem(ADMIN_MASTER_KEY);
   localStorage.clear();
   window.location.href = "/login.html";
 }
@@ -57,11 +51,6 @@ function logout(){
 async function apiFetch(path, options = {}){
   const res = await fetch(API + path, options);
   if(res.status === 401){
-    const data = await res.clone().json().catch(()=>({}));
-    if(String(data.message || "").toLowerCase().includes("master password")){
-      sessionStorage.removeItem(ADMIN_MASTER_KEY);
-      throw new Error("MasterPassword");
-    }
     logout();
     throw new Error("Unauthorized");
   }
@@ -70,20 +59,6 @@ async function apiFetch(path, options = {}){
     throw new Error("Forbidden");
   }
   return res;
-}
-
-function ensureMasterPassword(){
-  let masterPassword = sessionStorage.getItem(ADMIN_MASTER_KEY);
-  if(masterPassword) return true;
-
-  masterPassword = prompt("Enter admin master password:");
-  if(!masterPassword){
-    alert("Admin master password is required.");
-    window.location.href = "/dashboard.html";
-    return false;
-  }
-  sessionStorage.setItem(ADMIN_MASTER_KEY, masterPassword);
-  return true;
 }
 
 function setNow(){
@@ -248,7 +223,6 @@ async function loadSupportTickets(){
 
 async function refreshAll(){
   try{
-    if(!ensureMasterPassword()) return;
     const stats = await loadStats();
     await Promise.all([loadUsers(), loadTransactions(), loadSupportTickets()]);
     renderKpis(stats);
@@ -257,12 +231,6 @@ async function refreshAll(){
     renderTransactions();
     setNow();
   }catch(err){
-    if(err.message === "MasterPassword"){
-      if(ensureMasterPassword()){
-        refreshAll();
-      }
-      return;
-    }
     if(err.message !== "Unauthorized" && err.message !== "Forbidden"){
       console.log("Admin refresh error", err);
     }

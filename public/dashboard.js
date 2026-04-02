@@ -87,11 +87,12 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const sidebar = document.querySelector(".sidebar");
   const sidebarOverlay = document.getElementById("sidebarOverlay");
   const mbDashboard = document.getElementById("mbDashboard");
-  const mbBundles = document.getElementById("mbBundles");
+  const mbTransfers = document.getElementById("mbTransfers");
   const mbWallet = document.getElementById("mbWallet");
   const mbHistory = document.getElementById("mbHistory");
   const mbSettings = document.getElementById("mbSettings");
-  const mobileNavButtons = [mbDashboard, mbBundles, mbWallet, mbHistory, mbSettings].filter(Boolean);
+  const bundlesQuickBtn = document.getElementById("bundlesQuickBtn");
+  const mobileNavButtons = [mbDashboard, mbTransfers, mbWallet, mbHistory, mbSettings].filter(Boolean);
   const bundlesPickerModal = document.getElementById("bundlesPickerModal");
   const closeBundlesPickerBtn = document.getElementById("closeBundlesPickerBtn");
   const walletBtn = document.getElementById("walletBtn");
@@ -109,7 +110,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   function setMobileNavActive(key){
     const keyToEl = {
       dashboard: mbDashboard,
-      bundles: mbBundles,
+      transfers: mbTransfers,
       wallet: mbWallet,
       history: mbHistory,
       settings: mbSettings,
@@ -139,7 +140,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
       return;
     }
     bundlesPickerModal.style.display = "flex";
-    setMobileNavActive("bundles");
   }
 
   function closeBundlesPicker(){
@@ -160,9 +160,9 @@ document.addEventListener("DOMContentLoaded", ()=>{
       if(isMobileView()) closeMobileSidebar();
       const idToKey = {
         dashboardBtn: "dashboard",
-        mtnBtn: "bundles",
-        airtelBtn: "bundles",
-        telecelBtn: "bundles",
+        mtnBtn: "dashboard",
+        airtelBtn: "dashboard",
+        telecelBtn: "dashboard",
         walletBtn: "wallet",
         sidebarPurchasedHistoryBtn: "history",
         customerServiceBtn: "support",
@@ -178,7 +178,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
   });
 
   mbDashboard?.addEventListener("click", ()=> dashboardBtn?.click());
-  mbBundles?.addEventListener("click", ()=> openBundlesPicker());
+  mbTransfers?.addEventListener("click", ()=> document.getElementById("transfersBtn")?.click());
+  bundlesQuickBtn?.addEventListener("click", ()=> openBundlesPicker());
   mbWallet?.addEventListener("click", ()=> walletBtn?.click());
   mbHistory?.addEventListener("click", ()=> sidebarPurchasedHistoryBtn?.click());
   mbSettings?.addEventListener("click", ()=> settingsBtn?.click());
@@ -194,7 +195,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       if(network === "mtn") document.getElementById("mtnBtn")?.click();
       if(network === "airtel") document.getElementById("airtelBtn")?.click();
       if(network === "telecel") document.getElementById("telecelBtn")?.click();
-      setMobileNavActive("bundles");
+      setMobileNavActive("dashboard");
     });
   });
 
@@ -598,8 +599,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
   function renderSpentTrendChart(){
     if(!spentTrendCanvas) return;
 
-    const cssWidth = 118;
-    const cssHeight = 46;
+    const cssWidth = Math.max(60, Math.round(spentTrendCanvas.clientWidth || 118));
+    const cssHeight = Math.max(24, Math.round(spentTrendCanvas.clientHeight || 46));
     const dpr = window.devicePixelRatio || 1;
     spentTrendCanvas.width = Math.round(cssWidth * dpr);
     spentTrendCanvas.height = Math.round(cssHeight * dpr);
@@ -1515,6 +1516,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if(transfersCard.style.display === "block"){
       renderTransfers(true);
       transfersCard.scrollIntoView({behavior:"smooth"});
+      setMobileNavActive("transfers");
     }
   });
 

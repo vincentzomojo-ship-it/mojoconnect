@@ -3,6 +3,51 @@ const API = (window.location.protocol === "http:" || window.location.protocol ==
   ? window.location.origin
   : "http://localhost:5050";
 
+function removeBlackBackground(imgEl, threshold = 38, feather = 42){
+  if(!imgEl || imgEl.dataset.bgCutoutDone === "1") return;
+  const src = imgEl.getAttribute("src");
+  if(!src) return;
+
+  const source = new Image();
+  source.crossOrigin = "anonymous";
+  source.onload = () => {
+    try{
+      const canvas = document.createElement("canvas");
+      canvas.width = source.naturalWidth || source.width;
+      canvas.height = source.naturalHeight || source.height;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      ctx.drawImage(source, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      for(let i = 0; i < data.length; i += 4){
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const max = Math.max(r, g, b);
+
+        if(max <= threshold){
+          data[i + 3] = 0;
+          continue;
+        }
+
+        if(max < threshold + feather){
+          const ratio = (max - threshold) / feather;
+          data[i + 3] = Math.round(data[i + 3] * ratio);
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      imgEl.src = canvas.toDataURL("image/png");
+      imgEl.dataset.bgCutoutDone = "1";
+    }catch(err){
+      console.warn("Logo cutout failed:", err);
+    }
+  };
+  source.src = src;
+}
+
 async function readJsonSafe(res){
   try{
     return await res.json();
@@ -17,6 +62,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const registerForm = document.getElementById("registerForm");
   const showRegisterLink = document.getElementById("showRegisterLink");
   const showLoginLink = document.getElementById("showLoginLink");
+  const loginPasswordInput = document.getElementById("password");
+  const registerPasswordInput = document.getElementById("regPassword");
+  const showLoginPassword = document.getElementById("showLoginPassword");
+  const showRegisterPassword = document.getElementById("showRegisterPassword");
+  const brandLogo = document.querySelector(".brand-logo");
+
+  removeBlackBackground(brandLogo);
+
+  showLoginPassword?.addEventListener("change", () => {
+    if (loginPasswordInput) {
+      loginPasswordInput.type = showLoginPassword.checked ? "text" : "password";
+    }
+  });
+
+  showRegisterPassword?.addEventListener("change", () => {
+    if (registerPasswordInput) {
+      registerPasswordInput.type = showRegisterPassword.checked ? "text" : "password";
+    }
+  });
 
   // SWITCH FORMS (LOGIN PAGE)
   showRegisterLink?.addEventListener("click", () => {

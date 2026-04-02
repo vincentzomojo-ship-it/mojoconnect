@@ -1,7 +1,53 @@
 const API = window.location.origin; // Keep your original API logic  
 const token = localStorage.getItem("token");  
 
+function removeBlackBackground(imgEl, threshold = 38, feather = 42){
+  if(!imgEl || imgEl.dataset.bgCutoutDone === "1") return;
+  const src = imgEl.getAttribute("src");
+  if(!src) return;
+
+  const source = new Image();
+  source.crossOrigin = "anonymous";
+  source.onload = () => {
+    try{
+      const canvas = document.createElement("canvas");
+      canvas.width = source.naturalWidth || source.width;
+      canvas.height = source.naturalHeight || source.height;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      ctx.drawImage(source, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      for(let i = 0; i < data.length; i += 4){
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const max = Math.max(r, g, b);
+
+        if(max <= threshold){
+          data[i + 3] = 0;
+          continue;
+        }
+
+        if(max < threshold + feather){
+          const ratio = (max - threshold) / feather;
+          data[i + 3] = Math.round(data[i + 3] * ratio);
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      imgEl.src = canvas.toDataURL("image/png");
+      imgEl.dataset.bgCutoutDone = "1";
+    }catch(err){
+      console.warn("Logo cutout failed:", err);
+    }
+  };
+  source.src = src;
+}
+
 document.addEventListener("DOMContentLoaded", ()=>{  
+  removeBlackBackground(document.querySelector(".sidebar-logo img"));
 
   async function apiFetch(path, options = {}){
     const res = await fetch(API + path, options);

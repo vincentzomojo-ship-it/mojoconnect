@@ -44,6 +44,33 @@ body{
   transform: scale(1.1);
   letter-spacing:2px;
 }
+.sidebar-logo{
+  margin:0 0 26px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+.sidebar-logo img{
+  width:220px;
+  max-width:220px;
+  height:72px;
+  object-fit:contain;
+  display:block;
+  opacity:1;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,0.2));
+  transition:transform 0.25s ease, opacity 0.25s ease;
+}
+.sidebar-logo img:hover{
+  transform:scale(1.04);
+  opacity:1;
+}
+.sidebar-logo .fallback{
+  display:none;
+  font-weight:700;
+  letter-spacing:1px;
+  color:#0f172a;
+}
 .sidebar ul{
   list-style:none;
   padding:0;
@@ -795,7 +822,10 @@ tbody tr:hover{
 <div class="layout">
 
 <div class="sidebar">
-  <h2>MOJO</h2>
+  <div class="sidebar-logo">
+    <img src="images/mojo-logo.jpeg" alt="Mojo Connect" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <span class="fallback">MOJO</span>
+  </div>
   <ul>
     <li id="dashboardBtn"><i class="fas fa-home"></i> Dashboard</li>
     <li id="mtnBtn"><i class="fas fa-signal"></i> MTN Bundles</li>

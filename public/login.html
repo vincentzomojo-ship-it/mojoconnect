@@ -40,6 +40,7 @@ body{
   margin-bottom:14px;
   display:flex;
   justify-content:center;
+  isolation:isolate;
 }
 
 .brand-logo{
@@ -48,9 +49,9 @@ body{
   object-fit:contain;
   display:block;
   margin:0 auto;
-  mix-blend-mode:lighten;
-  opacity:0.96;
-  filter:brightness(1.06) contrast(0.96) saturate(0.92) drop-shadow(0 6px 14px rgba(0,0,0,0.10));
+  mix-blend-mode:screen;
+  opacity:0.95;
+  filter:brightness(1.08) contrast(1) saturate(1) drop-shadow(0 6px 14px rgba(0,0,0,0.12));
 }
 
 .login-box{

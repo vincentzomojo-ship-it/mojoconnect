@@ -296,16 +296,23 @@ body{
   margin:0;
 }
 .stat-card--kpi{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
+  display:grid;
+  grid-template-columns:1fr 96px;
+  align-items:stretch;
+  gap:0;
 }
 .kpi-text h4{
   margin:0 0 8px;
 }
 .kpi-value{
   margin:0;
+}
+.stat-card--kpi .kpi-text{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-height:82px;
+  padding-right:12px;
 }
 .kpi-side{
   width:54px;
@@ -323,8 +330,8 @@ body{
   font-size:22px;
 }
 .kpi-chart{
-  width:130px;
-  height:58px;
+  width:86px;
+  height:52px;
   border-radius:12px;
   background:linear-gradient(180deg,#fffdf5,#fff7da);
   border:1px solid rgba(246,183,0,0.25);
@@ -335,9 +342,17 @@ body{
   overflow:hidden;
 }
 .kpi-chart canvas{
-  width:118px;
-  height:46px;
+  width:78px;
+  height:40px;
   display:block;
+}
+.kpi-visual{
+  border-left:1px solid #eef2f7;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:82px;
+  padding-left:10px;
 }
 .stat-card:hover{
   transform: translateY(-8px);
@@ -775,6 +790,7 @@ body.dark-theme .toast{
     padding:14px 12px;
     border-radius:12px;
     min-height:92px;
+    grid-template-columns:1fr 88px;
   }
   .kpi-text{
     display:flex;
@@ -782,25 +798,33 @@ body.dark-theme .toast{
     justify-content:center;
     gap:2px;
   }
+  .stat-card--kpi .kpi-text{
+    min-height:72px;
+    padding-right:10px;
+  }
   .kpi-value{
     line-height:1.1;
   }
   .kpi-side{
-    width:46px;
-    height:46px;
+    width:42px;
+    height:42px;
     border-radius:12px;
   }
   .kpi-side i{
-    font-size:18px;
+    font-size:16px;
+  }
+  .kpi-visual{
+    min-height:72px;
+    padding-left:8px;
   }
   .kpi-chart{
-    width:92px;
-    height:42px;
+    width:74px;
+    height:38px;
     border-radius:10px;
   }
   .kpi-chart canvas{
-    width:84px;
-    height:34px;
+    width:66px;
+    height:30px;
   }
   button{
     min-height:44px;
@@ -1102,8 +1126,10 @@ tbody tr:hover{
       <h4>Total Orders</h4>
       <h2 id="totalOrdersValue" class="kpi-value">0</h2>
     </div>
-    <div class="kpi-side" aria-hidden="true">
-      <i class="fas fa-receipt"></i>
+    <div class="kpi-visual">
+      <div class="kpi-side" aria-hidden="true">
+        <i class="fas fa-receipt"></i>
+      </div>
     </div>
   </div>
   <div class="stat-card stat-card--kpi">
@@ -1111,8 +1137,10 @@ tbody tr:hover{
       <h4>Total Spent</h4>
       <h2 class="kpi-value">GH₵ <span id="totalSpentValue">0.00</span></h2>
     </div>
-    <div class="kpi-chart" aria-hidden="true">
-      <canvas id="spentTrendCanvas"></canvas>
+    <div class="kpi-visual">
+      <div class="kpi-chart" aria-hidden="true">
+        <canvas id="spentTrendCanvas"></canvas>
+      </div>
     </div>
   </div>
 </div>

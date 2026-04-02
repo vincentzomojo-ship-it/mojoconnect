@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>Moju's Data Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="icon" type="image/png" href="images/default-avatar.png">
@@ -15,6 +16,7 @@ body{
   font-family:Arial;
   background: linear-gradient(135deg,#f4f6f9,#e8ecf3);
   margin:0;
+  -webkit-text-size-adjust:100%;
 }
 
 /* LAYOUT */
@@ -687,6 +689,25 @@ body.dark-theme .toast{
   }
   .stats{
     grid-template-columns:1fr;
+  }
+  .container{
+    padding:14px;
+  }
+  .welcome h2{
+    font-size:24px;
+  }
+  .stat-card h4{
+    font-size:17px;
+  }
+  .stat-card h2{
+    font-size:31px;
+  }
+  button{
+    min-height:44px;
+    font-size:16px;
+  }
+  .sidebar li{
+    font-size:17px;
   }
   .card, .stat-card{
     margin-top:16px;

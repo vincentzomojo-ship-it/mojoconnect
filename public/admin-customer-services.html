@@ -237,27 +237,14 @@
 
 <script>
 const API = window.location.origin;
-const token = localStorage.getItem("token");
 let tickets = [];
 
-if(!token){
-  window.location.href = "/login.html";
-}
-
 function authHeaders(base = {}){
-  const headers = { ...base };
-  headers.Authorization = "Bearer " + token;
-  return headers;
+  return { ...base };
 }
 
 async function apiFetch(path, options = {}){
-  const res = await fetch(API + path, options);
-  if(res.status === 401){
-    localStorage.removeItem("token");
-    window.location.href = "/login.html";
-    throw new Error("Unauthorized");
-  }
-  return res;
+  return await fetch(API + path, options);
 }
 
 function toCsv(rows){

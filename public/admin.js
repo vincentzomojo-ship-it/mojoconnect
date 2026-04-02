@@ -1,20 +1,11 @@
 const API = window.location.origin;
-const token = localStorage.getItem("token");
 
 let allUsers = [];
 let allTransactions = [];
 let allTickets = [];
 
-if(!token){
-  window.location.href = "/login.html";
-}
-
 function authHeaders(base = {}){
-  const headers = { ...base };
-  if(token){
-    headers.Authorization = "Bearer " + token;
-  }
-  return headers;
+  return { ...base };
 }
 
 function formatMoney(value){
@@ -44,20 +35,11 @@ function downloadCsv(filename, rows){
 }
 
 function logout(){
-  localStorage.clear();
-  window.location.href = "/login.html";
+  window.location.href = "/admin.html";
 }
 
 async function apiFetch(path, options = {}){
   const res = await fetch(API + path, options);
-  if(res.status === 401){
-    logout();
-    throw new Error("Unauthorized");
-  }
-  if(res.status === 403 && token){
-    window.location.href = "/dashboard.html";
-    throw new Error("Forbidden");
-  }
   return res;
 }
 

@@ -295,64 +295,42 @@ body{
 .stat-card h2{
   margin:0;
 }
-.stat-card--kpi{
-  display:grid;
-  grid-template-columns:1fr 96px;
-  align-items:stretch;
-  gap:0;
-}
-.kpi-text h4{
-  margin:0 0 8px;
-}
-.kpi-value{
-  margin:0;
-}
-.stat-card--kpi .kpi-text{
+.stat-tile{
+  border:1px solid #edf2f7;
+  border-radius:14px;
+  padding:16px 14px;
+  min-height:160px;
   display:flex;
   flex-direction:column;
-  justify-content:center;
-  min-height:82px;
-  padding-right:12px;
+  justify-content:flex-start;
+  gap:10px;
 }
-.kpi-side{
-  width:54px;
-  height:54px;
-  border-radius:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,#fff7dc,#ffe9a6);
-  color:#b67c00;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7);
-  flex-shrink:0;
-}
-.kpi-side i{
-  font-size:22px;
-}
-.kpi-chart{
-  width:86px;
-  height:52px;
+.tile-icon{
+  width:44px;
+  height:44px;
   border-radius:12px;
-  background:linear-gradient(180deg,#fffdf5,#fff7da);
-  border:1px solid rgba(246,183,0,0.25);
   display:flex;
   align-items:center;
   justify-content:center;
-  flex-shrink:0;
-  overflow:hidden;
+  font-size:16px;
 }
-.kpi-chart canvas{
-  width:78px;
-  height:40px;
-  display:block;
+.tile-icon.orders{
+  background:#fff7dc;
+  color:#b67c00;
 }
-.kpi-visual{
-  border-left:1px solid #eef2f7;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:82px;
-  padding-left:10px;
+.tile-icon.spent{
+  background:#e9f0ff;
+  color:#3669ff;
+}
+.tile-value{
+  margin:0;
+  font-size:34px;
+  line-height:1.1;
+}
+.tile-label{
+  margin:0;
+  font-size:13px;
+  color:#6b7280;
 }
 .stat-card:hover{
   transform: translateY(-8px);
@@ -771,8 +749,11 @@ body.dark-theme .toast{
     gap:10px;
   }
   .stats{
-    grid-template-columns:1fr;
+    grid-template-columns:repeat(2,minmax(0,1fr));
     gap:10px;
+  }
+  #walletBalanceCard{
+    grid-column:1 / -1;
   }
   .container{
     padding:14px 14px 90px;
@@ -781,50 +762,23 @@ body.dark-theme .toast{
     font-size:24px;
   }
   .stat-card h4{
-    font-size:16px;
+    font-size:15px;
   }
-  .stat-card h2{
-    font-size:34px;
+  .tile-value{
+    font-size:36px;
   }
-  .stat-card--kpi{
+  .stat-tile{
+    min-height:146px;
     padding:14px 12px;
-    border-radius:12px;
-    min-height:92px;
-    grid-template-columns:1fr 88px;
+    gap:8px;
   }
-  .kpi-text{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    gap:2px;
-  }
-  .stat-card--kpi .kpi-text{
-    min-height:72px;
-    padding-right:10px;
-  }
-  .kpi-value{
-    line-height:1.1;
-  }
-  .kpi-side{
-    width:42px;
-    height:42px;
-    border-radius:12px;
-  }
-  .kpi-side i{
-    font-size:16px;
-  }
-  .kpi-visual{
-    min-height:72px;
-    padding-left:8px;
-  }
-  .kpi-chart{
-    width:74px;
-    height:38px;
+  .tile-icon{
+    width:40px;
+    height:40px;
     border-radius:10px;
   }
-  .kpi-chart canvas{
-    width:66px;
-    height:30px;
+  .tile-label{
+    font-size:12px;
   }
   button{
     min-height:44px;
@@ -1121,27 +1075,19 @@ tbody tr:hover{
     <h4>Wallet Balance</h4>
     <h2>GH₵ <span id="balance">0.00</span></h2>
   </div>
-  <div class="stat-card stat-card--kpi">
-    <div class="kpi-text">
-      <h4>Total Orders</h4>
-      <h2 id="totalOrdersValue" class="kpi-value">0</h2>
+  <div class="stat-card stat-tile">
+    <div class="tile-icon orders" aria-hidden="true">
+      <i class="fas fa-receipt"></i>
     </div>
-    <div class="kpi-visual">
-      <div class="kpi-side" aria-hidden="true">
-        <i class="fas fa-receipt"></i>
-      </div>
-    </div>
+    <h2 id="totalOrdersValue" class="tile-value">0</h2>
+    <p class="tile-label">Total Orders</p>
   </div>
-  <div class="stat-card stat-card--kpi">
-    <div class="kpi-text">
-      <h4>Total Spent</h4>
-      <h2 class="kpi-value">GH₵ <span id="totalSpentValue">0.00</span></h2>
+  <div class="stat-card stat-tile">
+    <div class="tile-icon spent" aria-hidden="true">
+      <i class="fas fa-wallet"></i>
     </div>
-    <div class="kpi-visual">
-      <div class="kpi-chart" aria-hidden="true">
-        <canvas id="spentTrendCanvas"></canvas>
-      </div>
-    </div>
+    <h2 class="tile-value">GH₵ <span id="totalSpentValue">0.00</span></h2>
+    <p class="tile-label">Total Spent</p>
   </div>
 </div>
 
@@ -1183,7 +1129,7 @@ tbody tr:hover{
       Pay Bills
     </button>
 
-    <button id="transfersBtn" style="flex:1; background:#f6b700;">
+    <button id="transfersBtn" style="flex:1 1 100%; background:#f6b700;">
       <i class="fas fa-exchange-alt"></i><br>
       Transfers
     </button>

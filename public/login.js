@@ -99,11 +99,12 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
 
       try {
+        const email = document.getElementById("email").value.trim().toLowerCase();
         const res = await fetch(API + "/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: document.getElementById("email").value,
+            email,
             password: document.getElementById("password").value
           })
         });
@@ -114,8 +115,12 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.setItem("token", data.token);
           window.location.href = "/dashboard.html";
         } else {
-          document.getElementById("errorMsg").innerText =
-            data.message || "Login failed";
+          if (data?.requiresEmailVerification) {
+            document.getElementById("errorMsg").innerText =
+              "Email not verified. Check your inbox, then login again.";
+            return;
+          }
+          document.getElementById("errorMsg").innerText = data.message || "Login failed";
         }
 
       } catch (err) {
@@ -132,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const regName = document.getElementById("regName").value.trim();
-        const regEmail = document.getElementById("regEmail").value.trim();
+        const regEmail = document.getElementById("regEmail").value.trim().toLowerCase();
         const regPassword = document.getElementById("regPassword").value;
 
         const res = await fetch(API + "/auth/register", {
@@ -151,8 +156,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await readJsonSafe(res);
 
-        document.getElementById("registerMsg").innerText =
-          data.message || "Registered";
+        const registerMsgEl = document.getElementById("registerMsg");
+        registerMsgEl.innerText = data.message || "Registered";
+
+        if (data?.verificationUrl) {
+          registerMsgEl.innerText += ` Verify now: ${data.verificationUrl}`;
+        }
 
         if (res.ok && data.success) {
           // On login.html: switch back to login form.

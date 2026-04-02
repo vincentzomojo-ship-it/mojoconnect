@@ -25,6 +25,19 @@ const User = sequelize.define('User', {
     type: DataTypes.ENUM('user', 'admin'),
     defaultValue: 'user',
   },
+  email_verified: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  },
+  email_verification_token: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  email_verification_expires: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
   pin_hash: {
     type: DataTypes.STRING,
     allowNull: true

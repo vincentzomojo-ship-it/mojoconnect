@@ -34,6 +34,7 @@ router.get('/profile', async (req, res) => {
     res.json({
       username: user.username,
       email: user.email,
+      email_verified: !!user.email_verified,
       wallet_balance: parseFloat(wallet.balance || 0)
     });
 

@@ -82,6 +82,9 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const settingsBtn = document.getElementById("settingsBtn");
   const dashboardBtn = document.getElementById("dashboardBtn");
   const customerServiceBtn = document.getElementById("customerServiceBtn");
+  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+  const sidebar = document.querySelector(".sidebar");
+  const sidebarOverlay = document.getElementById("sidebarOverlay");
   const walletBtn = document.getElementById("walletBtn");
   const walletBalanceCard = document.getElementById("walletBalanceCard");
   const addFundsCard = document.getElementById("addFundsCard");
@@ -92,6 +95,38 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const settingsPage = document.getElementById("settingsPage");
   const customerServicePage = document.getElementById("customerServicePage");
   const welcomeTitle = document.getElementById("welcomeTitle");
+
+  function isMobileView(){
+    return window.matchMedia("(max-width: 768px)").matches;
+  }
+
+  function closeMobileSidebar(){
+    sidebar?.classList.remove("open");
+    sidebarOverlay?.classList.remove("show");
+  }
+
+  function openMobileSidebar(){
+    sidebar?.classList.add("open");
+    sidebarOverlay?.classList.add("show");
+  }
+
+  mobileMenuBtn?.addEventListener("click", ()=>{
+    if(!isMobileView()) return;
+    if(sidebar?.classList.contains("open")) closeMobileSidebar();
+    else openMobileSidebar();
+  });
+
+  sidebarOverlay?.addEventListener("click", closeMobileSidebar);
+
+  sidebar?.querySelectorAll("li").forEach((item)=>{
+    item.addEventListener("click", ()=>{
+      if(isMobileView()) closeMobileSidebar();
+    });
+  });
+
+  window.addEventListener("resize", ()=>{
+    if(!isMobileView()) closeMobileSidebar();
+  });
 
   if(settingsBtn && dashboardPage && settingsPage){
     settingsBtn.onclick = () => {

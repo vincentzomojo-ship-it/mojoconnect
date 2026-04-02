@@ -289,6 +289,12 @@ body{
   box-shadow:0 4px 10px rgba(0,0,0,0.05);
   transition: all 0.3s ease;
 }
+.stat-card h4{
+  margin:0 0 8px;
+}
+.stat-card h2{
+  margin:0;
+}
 .stat-card--kpi{
   display:flex;
   align-items:center;
@@ -751,6 +757,7 @@ body.dark-theme .toast{
   }
   .stats{
     grid-template-columns:1fr;
+    gap:10px;
   }
   .container{
     padding:14px 14px 90px;
@@ -759,26 +766,41 @@ body.dark-theme .toast{
     font-size:24px;
   }
   .stat-card h4{
-    font-size:17px;
+    font-size:16px;
   }
   .stat-card h2{
-    font-size:31px;
+    font-size:34px;
+  }
+  .stat-card--kpi{
+    padding:14px 12px;
+    border-radius:12px;
+    min-height:92px;
+  }
+  .kpi-text{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:2px;
+  }
+  .kpi-value{
+    line-height:1.1;
   }
   .kpi-side{
-    width:50px;
-    height:50px;
+    width:46px;
+    height:46px;
     border-radius:12px;
   }
   .kpi-side i{
-    font-size:20px;
+    font-size:18px;
   }
   .kpi-chart{
-    width:120px;
-    height:54px;
+    width:92px;
+    height:42px;
+    border-radius:10px;
   }
   .kpi-chart canvas{
-    width:108px;
-    height:42px;
+    width:84px;
+    height:34px;
   }
   button{
     min-height:44px;
@@ -1525,9 +1547,9 @@ tbody tr:hover{
 
 <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile navigation">
   <button class="mobile-nav-btn active" id="mbDashboard"><i class="fas fa-home"></i><span>Home</span></button>
-  <button class="mobile-nav-btn" id="mbBundles"><i class="fas fa-signal"></i><span>Bundles</span></button>
-  <button class="mobile-nav-btn" id="mbWallet"><i class="fas fa-wallet"></i><span>Wallet</span></button>
   <button class="mobile-nav-btn" id="mbHistory"><i class="fas fa-clock-rotate-left"></i><span>History</span></button>
+  <button class="mobile-nav-btn" id="mbWallet"><i class="fas fa-wallet"></i><span>Wallet</span></button>
+  <button class="mobile-nav-btn" id="mbBundles"><i class="fas fa-signal"></i><span>Bundles</span></button>
   <button class="mobile-nav-btn" id="mbSettings"><i class="fas fa-cog"></i><span>Settings</span></button>
 </nav>
 

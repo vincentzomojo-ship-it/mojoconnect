@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const dashboardPage = document.getElementById("dashboardPage");
   const settingsPage = document.getElementById("settingsPage");
   const customerServicePage = document.getElementById("customerServicePage");
+  const welcomeTitle = document.getElementById("welcomeTitle");
 
   if(settingsBtn && dashboardPage && settingsPage){
     settingsBtn.onclick = () => {
@@ -678,6 +679,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
       const user = await res.json();  
       document.getElementById("balance").innerText =  
         parseFloat(user.wallet_balance || 0).toFixed(2);  
+
+      const displayName = String(user.username || "").trim() || "Mojo";
+      if(welcomeTitle) welcomeTitle.textContent = `Welcome back, ${displayName}!`;
+
+      // Keep settings profile fields in sync when available.
+      if(settingsUsername && !settingsUsername.value) settingsUsername.value = displayName;
+      if(settingsEmail && !settingsEmail.value && user.email) settingsEmail.value = user.email;
+      updateProfilePreview();
     }catch(err){ if(err.message !== "Unauthorized") console.log(err); }  
   }  
 

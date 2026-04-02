@@ -113,6 +113,9 @@ body{
 .sidebar-overlay{
   display:none;
 }
+.mobile-bottom-nav{
+  display:none;
+}
 
 /* MAIN */
 .main{
@@ -691,7 +694,7 @@ body.dark-theme .toast{
     grid-template-columns:1fr;
   }
   .container{
-    padding:14px;
+    padding:14px 14px 90px;
   }
   .welcome h2{
     font-size:24px;
@@ -708,6 +711,44 @@ body.dark-theme .toast{
   }
   .sidebar li{
     font-size:17px;
+  }
+  .mobile-bottom-nav{
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:5100;
+    background:rgba(255,255,255,0.96);
+    border-top:1px solid #e5e7eb;
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+    gap:6px;
+  }
+  .mobile-nav-btn{
+    border:none;
+    background:transparent;
+    color:#374151;
+    border-radius:10px;
+    min-height:44px;
+    padding:6px 4px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    font-size:11px;
+    margin:0;
+  }
+  .mobile-nav-btn i{
+    font-size:16px;
+  }
+  .mobile-nav-btn.active{
+    background:rgba(246,183,0,0.2);
+    color:#9a6a00;
+    font-weight:700;
   }
   .card, .stat-card{
     margin-top:16px;
@@ -1381,6 +1422,14 @@ tbody tr:hover{
 </div>
 </div>
 </div>
+
+<nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile navigation">
+  <button class="mobile-nav-btn active" id="mbDashboard"><i class="fas fa-home"></i><span>Home</span></button>
+  <button class="mobile-nav-btn" id="mbBundles"><i class="fas fa-signal"></i><span>Bundles</span></button>
+  <button class="mobile-nav-btn" id="mbWallet"><i class="fas fa-wallet"></i><span>Wallet</span></button>
+  <button class="mobile-nav-btn" id="mbHistory"><i class="fas fa-clock-rotate-left"></i><span>History</span></button>
+  <button class="mobile-nav-btn" id="mbSettings"><i class="fas fa-cog"></i><span>Settings</span></button>
+</nav>
 
 <script src="dashboard.js"></script>
 <script src="mtn.js"></script>

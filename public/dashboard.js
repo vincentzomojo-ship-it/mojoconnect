@@ -82,9 +82,16 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const settingsBtn = document.getElementById("settingsBtn");
   const dashboardBtn = document.getElementById("dashboardBtn");
   const customerServiceBtn = document.getElementById("customerServiceBtn");
+  const sidebarPurchasedHistoryBtn = document.getElementById("sidebarPurchasedHistoryBtn");
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const sidebar = document.querySelector(".sidebar");
   const sidebarOverlay = document.getElementById("sidebarOverlay");
+  const mbDashboard = document.getElementById("mbDashboard");
+  const mbBundles = document.getElementById("mbBundles");
+  const mbWallet = document.getElementById("mbWallet");
+  const mbHistory = document.getElementById("mbHistory");
+  const mbSettings = document.getElementById("mbSettings");
+  const mobileNavButtons = [mbDashboard, mbBundles, mbWallet, mbHistory, mbSettings].filter(Boolean);
   const walletBtn = document.getElementById("walletBtn");
   const walletBalanceCard = document.getElementById("walletBalanceCard");
   const addFundsCard = document.getElementById("addFundsCard");
@@ -95,6 +102,19 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const settingsPage = document.getElementById("settingsPage");
   const customerServicePage = document.getElementById("customerServicePage");
   const welcomeTitle = document.getElementById("welcomeTitle");
+
+  function setMobileNavActive(key){
+    const keyToEl = {
+      dashboard: mbDashboard,
+      bundles: mbBundles,
+      wallet: mbWallet,
+      history: mbHistory,
+      settings: mbSettings,
+      support: mbSettings
+    };
+    mobileNavButtons.forEach(btn => btn.classList.remove("active"));
+    keyToEl[key]?.classList.add("active");
+  }
 
   function isMobileView(){
     return window.matchMedia("(max-width: 768px)").matches;
@@ -121,12 +141,30 @@ document.addEventListener("DOMContentLoaded", ()=>{
   sidebar?.querySelectorAll("li").forEach((item)=>{
     item.addEventListener("click", ()=>{
       if(isMobileView()) closeMobileSidebar();
+      const idToKey = {
+        dashboardBtn: "dashboard",
+        mtnBtn: "bundles",
+        airtelBtn: "bundles",
+        telecelBtn: "bundles",
+        walletBtn: "wallet",
+        sidebarPurchasedHistoryBtn: "history",
+        customerServiceBtn: "support",
+        settingsBtn: "settings"
+      };
+      const key = idToKey[item.id];
+      if(key) setMobileNavActive(key);
     });
   });
 
   window.addEventListener("resize", ()=>{
     if(!isMobileView()) closeMobileSidebar();
   });
+
+  mbDashboard?.addEventListener("click", ()=> dashboardBtn?.click());
+  mbBundles?.addEventListener("click", ()=> document.getElementById("mtnBtn")?.click());
+  mbWallet?.addEventListener("click", ()=> walletBtn?.click());
+  mbHistory?.addEventListener("click", ()=> sidebarPurchasedHistoryBtn?.click());
+  mbSettings?.addEventListener("click", ()=> settingsBtn?.click());
 
   if(settingsBtn && dashboardPage && settingsPage){
     settingsBtn.onclick = () => {
@@ -136,6 +174,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       if(walletBalanceCard) walletBalanceCard.style.display = "none";
       if(addFundsCard) addFundsCard.style.display = "none";
       openSettingsPanel("profileSection");
+      setMobileNavActive("settings");
     };
   }
 
@@ -146,6 +185,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       if(customerServicePage) customerServicePage.style.display = "none";
       if(walletBalanceCard) walletBalanceCard.style.display = "none";
       if(addFundsCard) addFundsCard.style.display = "none";
+      setMobileNavActive("dashboard");
     };
   }
 
@@ -156,6 +196,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       customerServicePage.style.display = "block";
       if(walletBalanceCard) walletBalanceCard.style.display = "none";
       if(addFundsCard) addFundsCard.style.display = "none";
+      setMobileNavActive("support");
     }
   });
 
@@ -169,6 +210,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       walletBalanceCard.scrollIntoView({ behavior:"smooth", block:"center" });
     }
     if(addFundsCard) addFundsCard.style.display = "block";
+    setMobileNavActive("wallet");
   });
 
   const settingsTabs = document.querySelectorAll(".settings-tab");

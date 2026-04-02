@@ -1,7 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
-const { register, login, verifyEmail, resendVerification } = require('../controllers/authController');
+const {
+  register,
+  login,
+  verifyEmail,
+  resendVerification,
+  forgotPassword,
+  resetPassword
+} = require('../controllers/authController');
 
 // REGISTER
 router.post('/register', [
@@ -27,5 +34,14 @@ router.get('/verify-email', verifyEmail);
 router.post('/resend-verification', [
   body('email').isEmail().normalizeEmail()
 ], resendVerification);
+
+router.post('/forgot-password', [
+  body('email').isEmail().normalizeEmail()
+], forgotPassword);
+
+router.post('/reset-password', [
+  body('token').isString().trim().notEmpty(),
+  body('password').isString().isLength({ min: 6 })
+], resetPassword);
 
 module.exports = router;

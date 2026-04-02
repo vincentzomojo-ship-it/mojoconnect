@@ -51,32 +51,6 @@
     <p id="statusText">Verifying your email, please wait...</p>
     <a href="/login.html">Go to Login</a>
   </div>
-
-  <script>
-    (async function(){
-      const statusText = document.getElementById("statusText");
-      const token = new URLSearchParams(window.location.search).get("token");
-      if(!token){
-        statusText.textContent = "Verification token is missing.";
-        statusText.className = "err";
-        return;
-      }
-
-      try{
-        const res = await fetch(`/auth/verify-email?token=${encodeURIComponent(token)}`);
-        const data = await res.json().catch(() => ({}));
-        if(res.ok){
-          statusText.textContent = data.message || "Email verified successfully.";
-          statusText.className = "ok";
-          return;
-        }
-        statusText.textContent = data.message || "Unable to verify email.";
-        statusText.className = "err";
-      }catch{
-        statusText.textContent = "Server error while verifying email.";
-        statusText.className = "err";
-      }
-    })();
-  </script>
+  <script src="verify-email.js"></script>
 </body>
 </html>

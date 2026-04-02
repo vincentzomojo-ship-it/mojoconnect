@@ -33,6 +33,21 @@ async function sendVerificationEmail(req, user, token) {
   return verificationUrl;
 }
 
+function buildResetPasswordUrl(req, token) {
+  const base = getAppBaseUrl(req).replace(/\/+$/, '');
+  return `${base}/reset-password.html?token=${encodeURIComponent(token)}`;
+}
+
+async function sendResetPasswordEmail(req, user, token) {
+  const resetUrl = buildResetPasswordUrl(req, token);
+  logger.info('Password reset link generated', {
+    userId: user.id,
+    email: user.email,
+    resetUrl
+  });
+  return resetUrl;
+}
+
 // REGISTER
 const register = async (req, res) => {
   const errors = validationResult(req);
@@ -184,4 +199,68 @@ const resendVerification = async (req, res) => {
   }
 };
 
-module.exports = { register, login, verifyEmail, resendVerification };
+const forgotPassword = async (req, res) => {
+  const email = String(req.body.email || '').trim().toLowerCase();
+  if (!email) return res.status(400).json({ message: 'Email is required.' });
+
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    // Do not reveal if account exists.
+    if (!user) {
+      return res.json({
+        success: true,
+        message: 'If the account exists, a reset link has been sent.'
+      });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    user.reset_password_token = token;
+    user.reset_password_expires = new Date(Date.now() + 1000 * 60 * 30); // 30 minutes
+    await user.save();
+
+    const resetUrl = await sendResetPasswordEmail(req, user, token);
+    const payload = {
+      success: true,
+      message: 'If the account exists, a reset link has been sent.'
+    };
+    if (process.env.NODE_ENV !== 'production') {
+      payload.resetUrl = resetUrl;
+    }
+    return res.json(payload);
+  } catch (err) {
+    console.error('FORGOT PASSWORD ERROR:', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const token = String(req.body.token || '').trim();
+  const password = String(req.body.password || '');
+  if (!token || !password) {
+    return res.status(400).json({ message: 'Token and new password are required.' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters.' });
+  }
+
+  try {
+    const user = await User.findOne({ where: { reset_password_token: token } });
+    if (!user) return res.status(400).json({ message: 'Invalid or expired reset token.' });
+    if (!user.reset_password_expires || new Date(user.reset_password_expires).getTime() < Date.now()) {
+      return res.status(400).json({ message: 'Reset token has expired. Request a new one.' });
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    user.reset_password_token = null;
+    user.reset_password_expires = null;
+    await user.save();
+
+    return res.json({ success: true, message: 'Password reset successful. Please login.' });
+  } catch (err) {
+    console.error('RESET PASSWORD ERROR:', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { register, login, verifyEmail, resendVerification, forgotPassword, resetPassword };

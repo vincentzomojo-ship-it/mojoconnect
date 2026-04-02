@@ -171,6 +171,23 @@ body{
   min-height:18px;
   color:#ffd7d7;
 }
+.resend-wrap{
+  margin-top:8px;
+  font-size:13px;
+  display:none;
+  color:#fff;
+}
+.resend-wrap button{
+  margin-top:0;
+  margin-left:6px;
+  padding:6px 10px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  background:#fff;
+  color:#111;
+  font-weight:700;
+}
 
 #registerForm{
   display:none;
@@ -228,7 +245,7 @@ body{
 <input type="checkbox"> Remember me
 </label>
 
-<a href="#">Forgot password?</a>
+<a href="/forgot-password.html">Forgot password?</a>
 </div>
 
 <button type="submit" class="login-btn">Login</button>
@@ -268,6 +285,10 @@ Don't have an account? <a id="showRegisterLink">Register</a>
 <button type="submit" class="login-btn">Register</button>
 
 <p id="registerMsg"></p>
+<div class="resend-wrap" id="resendWrap">
+  Didn't receive token?
+  <button type="button" id="resendTokenBtn">Resend token</button>
+</div>
 
 <div class="register">
 Already have an account? <a id="showLoginLink">Login</a>

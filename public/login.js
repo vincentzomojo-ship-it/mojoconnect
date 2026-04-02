@@ -67,6 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const showLoginPassword = document.getElementById("showLoginPassword");
   const showRegisterPassword = document.getElementById("showRegisterPassword");
   const brandLogo = document.querySelector(".brand-logo");
+  const resendWrap = document.getElementById("resendWrap");
+  const resendTokenBtn = document.getElementById("resendTokenBtn");
+  const registerMsgEl = document.getElementById("registerMsg");
+
+  let lastRegisteredEmail = "";
 
   removeBlackBackground(brandLogo);
 
@@ -86,11 +91,13 @@ document.addEventListener("DOMContentLoaded", () => {
   showRegisterLink?.addEventListener("click", () => {
     if (loginForm) loginForm.style.display = "none";
     if (registerForm) registerForm.style.display = "block";
+    if (resendWrap) resendWrap.style.display = "none";
   });
 
   showLoginLink?.addEventListener("click", () => {
     if (registerForm) registerForm.style.display = "none";
     if (loginForm) loginForm.style.display = "block";
+    if (resendWrap) resendWrap.style.display = "none";
   });
 
   // LOGIN
@@ -156,12 +163,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await readJsonSafe(res);
 
-        const registerMsgEl = document.getElementById("registerMsg");
         registerMsgEl.innerText = data.message || "Registered";
 
         if (data?.verificationUrl) {
           registerMsgEl.innerText += ` Verify now: ${data.verificationUrl}`;
         }
+        lastRegisteredEmail = regEmail;
+        if (resendWrap) resendWrap.style.display = "block";
 
         if (res.ok && data.success) {
           // On login.html: switch back to login form.
@@ -180,9 +188,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
       } catch (err) {
         console.log(err);
-        document.getElementById("registerMsg").innerText = "Server error";
+        registerMsgEl.innerText = "Server error";
+        if (resendWrap) resendWrap.style.display = "none";
       }
     });
   }
+
+  resendTokenBtn?.addEventListener("click", async () => {
+    const email = (lastRegisteredEmail || document.getElementById("regEmail")?.value || "").trim().toLowerCase();
+    if (!email) {
+      registerMsgEl.innerText = "Enter your email first.";
+      return;
+    }
+
+    registerMsgEl.innerText = "Sending new token...";
+    try {
+      const res = await fetch(API + "/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const data = await readJsonSafe(res);
+      if (!res.ok) {
+        registerMsgEl.innerText = data.message || "Failed to resend token.";
+        return;
+      }
+      registerMsgEl.innerText = data.message || "Token resent successfully.";
+      if (data?.verificationUrl) {
+        registerMsgEl.innerText += ` Verify now: ${data.verificationUrl}`;
+      }
+    } catch (err) {
+      console.log(err);
+      registerMsgEl.innerText = "Server error while resending token.";
+    }
+  });
 
 });

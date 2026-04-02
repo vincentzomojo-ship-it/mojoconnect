@@ -339,6 +339,33 @@ body{
   height:46px;
   display:block;
 }
+.stats-combined{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:12px;
+  align-items:stretch;
+}
+.stats-combined-left{
+  display:flex;
+  flex-direction:column;
+}
+.stats-line{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-height:72px;
+}
+.stats-line + .stats-line{
+  border-top:1px solid #eef2f7;
+  margin-top:8px;
+  padding-top:10px;
+}
+.stats-combined-right{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:10px;
+}
 .stat-card:hover{
   transform: translateY(-8px);
   box-shadow:0 15px 30px rgba(0,0,0,0.1);
@@ -776,6 +803,18 @@ body.dark-theme .toast{
     border-radius:12px;
     min-height:92px;
   }
+  .stats-combined{
+    grid-template-columns:1fr auto;
+    gap:10px;
+    padding:12px 10px;
+  }
+  .stats-line{
+    min-height:66px;
+  }
+  .stats-line + .stats-line{
+    margin-top:6px;
+    padding-top:8px;
+  }
   .kpi-text{
     display:flex;
     flex-direction:column;
@@ -1097,22 +1136,24 @@ tbody tr:hover{
     <h4>Wallet Balance</h4>
     <h2>GH₵ <span id="balance">0.00</span></h2>
   </div>
-  <div class="stat-card stat-card--kpi">
-    <div class="kpi-text">
-      <h4>Total Orders</h4>
-      <h2 id="totalOrdersValue" class="kpi-value">0</h2>
+  <div class="stat-card stats-combined">
+    <div class="stats-combined-left">
+      <div class="stats-line">
+        <h4>Total Orders</h4>
+        <h2 id="totalOrdersValue" class="kpi-value">0</h2>
+      </div>
+      <div class="stats-line">
+        <h4>Total Spent</h4>
+        <h2 class="kpi-value">GH₵ <span id="totalSpentValue">0.00</span></h2>
+      </div>
     </div>
-    <div class="kpi-side" aria-hidden="true">
-      <i class="fas fa-receipt"></i>
-    </div>
-  </div>
-  <div class="stat-card stat-card--kpi">
-    <div class="kpi-text">
-      <h4>Total Spent</h4>
-      <h2 class="kpi-value">GH₵ <span id="totalSpentValue">0.00</span></h2>
-    </div>
-    <div class="kpi-chart" aria-hidden="true">
-      <canvas id="spentTrendCanvas"></canvas>
+    <div class="stats-combined-right">
+      <div class="kpi-side" aria-hidden="true">
+        <i class="fas fa-receipt"></i>
+      </div>
+      <div class="kpi-chart" aria-hidden="true">
+        <canvas id="spentTrendCanvas"></canvas>
+      </div>
     </div>
   </div>
 </div>
@@ -1135,9 +1176,9 @@ tbody tr:hover{
 
   <div style="display:flex; gap:10px; flex-wrap:wrap;">
 
-    <button id="transfersBtn" style="flex:1; background:#f6b700;">
-      <i class="fas fa-exchange-alt"></i><br>
-      Transfers
+    <button id="bundlesQuickBtn" style="flex:1; background:#f6b700;">
+      <i class="fas fa-signal"></i><br>
+      Bundles
     </button>
 
     <button id="sendMoneyBtn" style="flex:2; background:#f6b700;">
@@ -1153,6 +1194,11 @@ tbody tr:hover{
     <button id="payBillsBtn" style="flex:1; background:#f6b700;">
       <i class="fas fa-file-invoice"></i><br>
       Pay Bills
+    </button>
+
+    <button id="transfersBtn" style="flex:1; background:#f6b700;">
+      <i class="fas fa-exchange-alt"></i><br>
+      Transfers
     </button>
 
   </div>
@@ -1547,9 +1593,9 @@ tbody tr:hover{
 
 <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile navigation">
   <button class="mobile-nav-btn active" id="mbDashboard"><i class="fas fa-home"></i><span>Home</span></button>
-  <button class="mobile-nav-btn" id="mbHistory"><i class="fas fa-clock-rotate-left"></i><span>History</span></button>
-  <button class="mobile-nav-btn" id="mbWallet"><i class="fas fa-wallet"></i><span>Wallet</span></button>
   <button class="mobile-nav-btn" id="mbBundles"><i class="fas fa-signal"></i><span>Bundles</span></button>
+  <button class="mobile-nav-btn" id="mbWallet"><i class="fas fa-wallet"></i><span>Wallet</span></button>
+  <button class="mobile-nav-btn" id="mbHistory"><i class="fas fa-clock-rotate-left"></i><span>History</span></button>
   <button class="mobile-nav-btn" id="mbSettings"><i class="fas fa-cog"></i><span>Settings</span></button>
 </nav>
 

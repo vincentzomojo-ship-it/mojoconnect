@@ -92,11 +92,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const mbHistory = document.getElementById("mbHistory");
   const mbSettings = document.getElementById("mbSettings");
   const mobileNavButtons = [mbDashboard, mbBundles, mbWallet, mbHistory, mbSettings].filter(Boolean);
+  const bundlesPickerModal = document.getElementById("bundlesPickerModal");
+  const closeBundlesPickerBtn = document.getElementById("closeBundlesPickerBtn");
   const walletBtn = document.getElementById("walletBtn");
   const walletBalanceCard = document.getElementById("walletBalanceCard");
   const addFundsCard = document.getElementById("addFundsCard");
   const totalOrdersValue = document.getElementById("totalOrdersValue");
   const totalSpentValue = document.getElementById("totalSpentValue");
+  const spentTrendCanvas = document.getElementById("spentTrendCanvas");
 
   const dashboardPage = document.getElementById("dashboardPage");
   const settingsPage = document.getElementById("settingsPage");
@@ -130,6 +133,20 @@ document.addEventListener("DOMContentLoaded", ()=>{
     sidebarOverlay?.classList.add("show");
   }
 
+  function openBundlesPicker(){
+    if(!bundlesPickerModal){
+      document.getElementById("mtnBtn")?.click();
+      return;
+    }
+    bundlesPickerModal.style.display = "flex";
+    setMobileNavActive("bundles");
+  }
+
+  function closeBundlesPicker(){
+    if(!bundlesPickerModal) return;
+    bundlesPickerModal.style.display = "none";
+  }
+
   mobileMenuBtn?.addEventListener("click", ()=>{
     if(!isMobileView()) return;
     if(sidebar?.classList.contains("open")) closeMobileSidebar();
@@ -161,10 +178,25 @@ document.addEventListener("DOMContentLoaded", ()=>{
   });
 
   mbDashboard?.addEventListener("click", ()=> dashboardBtn?.click());
-  mbBundles?.addEventListener("click", ()=> document.getElementById("mtnBtn")?.click());
+  mbBundles?.addEventListener("click", ()=> openBundlesPicker());
   mbWallet?.addEventListener("click", ()=> walletBtn?.click());
   mbHistory?.addEventListener("click", ()=> sidebarPurchasedHistoryBtn?.click());
   mbSettings?.addEventListener("click", ()=> settingsBtn?.click());
+
+  closeBundlesPickerBtn?.addEventListener("click", closeBundlesPicker);
+  bundlesPickerModal?.addEventListener("click", (e)=>{
+    if(e.target === bundlesPickerModal) closeBundlesPicker();
+  });
+  bundlesPickerModal?.querySelectorAll(".bundle-choice-btn").forEach((btn)=>{
+    btn.addEventListener("click", ()=>{
+      const network = btn.dataset.network;
+      closeBundlesPicker();
+      if(network === "mtn") document.getElementById("mtnBtn")?.click();
+      if(network === "airtel") document.getElementById("airtelBtn")?.click();
+      if(network === "telecel") document.getElementById("telecelBtn")?.click();
+      setMobileNavActive("bundles");
+    });
+  });
 
   if(settingsBtn && dashboardPage && settingsPage){
     settingsBtn.onclick = () => {
@@ -543,12 +575,89 @@ document.addEventListener("DOMContentLoaded", ()=>{
       return !isFailed ? sum + amount : sum;
     }, 0);
     totalSpentValue.innerText = spent.toFixed(2);
+    renderSpentTrendChart();
   }
 
   function incrementTotalSpent(amount){
     if(!totalSpentValue) return;
     const current = parseFloat(totalSpentValue.innerText || "0") || 0;
     totalSpentValue.innerText = (current + (parseFloat(amount) || 0)).toFixed(2);
+    renderSpentTrendChart();
+  }
+
+  function getSpentTrendValues(limit = 8){
+    return (purchaseTransactions || [])
+      .filter(tx => {
+        const status = String(tx?.status || "").toLowerCase();
+        return !(status.includes("fail") || status.includes("cancel"));
+      })
+      .slice(-limit)
+      .map(tx => parseFloat(tx?.amount || 0) || 0);
+  }
+
+  function renderSpentTrendChart(){
+    if(!spentTrendCanvas) return;
+
+    const cssWidth = 118;
+    const cssHeight = 46;
+    const dpr = window.devicePixelRatio || 1;
+    spentTrendCanvas.width = Math.round(cssWidth * dpr);
+    spentTrendCanvas.height = Math.round(cssHeight * dpr);
+    const ctx = spentTrendCanvas.getContext("2d");
+    if(!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+    const values = getSpentTrendValues(8);
+    if(values.length < 2){
+      ctx.strokeStyle = "rgba(182,124,0,0.35)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(4, cssHeight - 8);
+      ctx.lineTo(cssWidth - 4, cssHeight - 8);
+      ctx.stroke();
+      return;
+    }
+
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = Math.max(max - min, 1);
+    const xStep = (cssWidth - 8) / (values.length - 1);
+
+    const points = values.map((v, i) => {
+      const x = 4 + i * xStep;
+      const y = 4 + (cssHeight - 12) * (1 - (v - min) / range);
+      return { x, y };
+    });
+
+    const areaGradient = ctx.createLinearGradient(0, 0, 0, cssHeight);
+    areaGradient.addColorStop(0, "rgba(246,183,0,0.30)");
+    areaGradient.addColorStop(1, "rgba(246,183,0,0)");
+
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, cssHeight - 2);
+    points.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(points[points.length - 1].x, cssHeight - 2);
+    ctx.closePath();
+    ctx.fillStyle = areaGradient;
+    ctx.fill();
+
+    ctx.beginPath();
+    points.forEach((p, idx) => {
+      if(idx === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.strokeStyle = "#b67c00";
+    ctx.lineWidth = 2.3;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
+
+    const last = points[points.length - 1];
+    ctx.beginPath();
+    ctx.arc(last.x, last.y, 2.8, 0, Math.PI * 2);
+    ctx.fillStyle = "#b67c00";
+    ctx.fill();
   }
 
   function appendPurchasedHistoryRow(type, amount, status, description){
@@ -623,6 +732,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   notifications = getStoredNotifications();
   renderNotifications();
   updateSettingsTxSummary();
+  renderSpentTrendChart();
 
   notifyBtn?.addEventListener("click", (e)=>{
     e.stopPropagation();

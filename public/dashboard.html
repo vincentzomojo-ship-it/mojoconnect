@@ -289,6 +289,50 @@ body{
   box-shadow:0 4px 10px rgba(0,0,0,0.05);
   transition: all 0.3s ease;
 }
+.stat-card--kpi{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.kpi-text h4{
+  margin:0 0 8px;
+}
+.kpi-value{
+  margin:0;
+}
+.kpi-side{
+  width:54px;
+  height:54px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#fff7dc,#ffe9a6);
+  color:#b67c00;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7);
+  flex-shrink:0;
+}
+.kpi-side i{
+  font-size:22px;
+}
+.kpi-chart{
+  width:130px;
+  height:58px;
+  border-radius:12px;
+  background:linear-gradient(180deg,#fffdf5,#fff7da);
+  border:1px solid rgba(246,183,0,0.25);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  overflow:hidden;
+}
+.kpi-chart canvas{
+  width:118px;
+  height:46px;
+  display:block;
+}
 .stat-card:hover{
   transform: translateY(-8px);
   box-shadow:0 15px 30px rgba(0,0,0,0.1);
@@ -502,6 +546,21 @@ body{
 .settings-modal-actions button{
   margin-top:0;
 }
+.bundle-choice-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.bundle-choice-btn{
+  margin-top:0;
+  border-radius:10px;
+  font-weight:700;
+  background:#f6b700;
+}
+.bundle-choice-btn:hover{
+  background:#d99a00;
+}
 .toast-root{
   position:fixed;
   top:18px;
@@ -704,6 +763,22 @@ body.dark-theme .toast{
   }
   .stat-card h2{
     font-size:31px;
+  }
+  .kpi-side{
+    width:50px;
+    height:50px;
+    border-radius:12px;
+  }
+  .kpi-side i{
+    font-size:20px;
+  }
+  .kpi-chart{
+    width:120px;
+    height:54px;
+  }
+  .kpi-chart canvas{
+    width:108px;
+    height:42px;
   }
   button{
     min-height:44px;
@@ -1000,13 +1075,23 @@ tbody tr:hover{
     <h4>Wallet Balance</h4>
     <h2>GH₵ <span id="balance">0.00</span></h2>
   </div>
-  <div class="stat-card">
-    <h4>Total Orders</h4>
-    <h2 id="totalOrdersValue">0</h2>
+  <div class="stat-card stat-card--kpi">
+    <div class="kpi-text">
+      <h4>Total Orders</h4>
+      <h2 id="totalOrdersValue" class="kpi-value">0</h2>
+    </div>
+    <div class="kpi-side" aria-hidden="true">
+      <i class="fas fa-receipt"></i>
+    </div>
   </div>
-  <div class="stat-card">
-    <h4>Total Spent</h4>
-    <h2>GH₵ <span id="totalSpentValue">0.00</span></h2>
+  <div class="stat-card stat-card--kpi">
+    <div class="kpi-text">
+      <h4>Total Spent</h4>
+      <h2 class="kpi-value">GH₵ <span id="totalSpentValue">0.00</span></h2>
+    </div>
+    <div class="kpi-chart" aria-hidden="true">
+      <canvas id="spentTrendCanvas"></canvas>
+    </div>
   </div>
 </div>
 
@@ -1412,6 +1497,21 @@ tbody tr:hover{
     <div class="settings-modal-actions">
       <button class="close-modal-btn" data-modal="deleteAccountModal" style="background:#9ca3af;">Cancel</button>
       <button id="confirmDeleteAccountBtn" style="background:#b91c1c;">Delete Account</button>
+    </div>
+  </div>
+</div>
+
+<div class="settings-modal" id="bundlesPickerModal">
+  <div class="settings-modal-card">
+    <h3>Choose Bundle Network</h3>
+    <p>Select a network to continue.</p>
+    <div class="bundle-choice-grid">
+      <button class="bundle-choice-btn" data-network="mtn">MTN Bundles</button>
+      <button class="bundle-choice-btn" data-network="airtel">AirtelTigo Bundles</button>
+      <button class="bundle-choice-btn" data-network="telecel">Telecel Bundles</button>
+    </div>
+    <div class="settings-modal-actions">
+      <button id="closeBundlesPickerBtn" style="background:#9ca3af;">Cancel</button>
     </div>
   </div>
 </div>

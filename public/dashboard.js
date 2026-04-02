@@ -177,8 +177,25 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if(!isMobileView()) closeMobileSidebar();
   });
 
+  function toggleTransfersCard(showOnly = false){
+    const transfersCard = document.getElementById("transfersCard");
+    if(!transfersCard) return;
+
+    if(showOnly){
+      transfersCard.style.display = "block";
+    }else{
+      transfersCard.style.display = transfersCard.style.display === "none" ? "block" : "none";
+    }
+
+    if(transfersCard.style.display === "block"){
+      renderTransfers(true);
+      transfersCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      setMobileNavActive("transfers");
+    }
+  }
+
   mbDashboard?.addEventListener("click", ()=> dashboardBtn?.click());
-  mbTransfers?.addEventListener("click", ()=> document.getElementById("transfersBtn")?.click());
+  mbTransfers?.addEventListener("click", ()=> toggleTransfersCard(true));
   bundlesQuickBtn?.addEventListener("click", ()=> openBundlesPicker());
   mbWallet?.addEventListener("click", ()=> walletBtn?.click());
   mbHistory?.addEventListener("click", ()=> sidebarPurchasedHistoryBtn?.click());
@@ -1509,16 +1526,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   // -------------------------
   // TRANSFERS & PAY BILLS (keep original)
   // -------------------------
-  transfersBtn?.addEventListener("click", ()=>{
-    const transfersCard = document.getElementById("transfersCard");
-    if(!transfersCard) return;
-    transfersCard.style.display = transfersCard.style.display === "none" ? "block" : "none";
-    if(transfersCard.style.display === "block"){
-      renderTransfers(true);
-      transfersCard.scrollIntoView({behavior:"smooth"});
-      setMobileNavActive("transfers");
-    }
-  });
+  transfersBtn?.addEventListener("click", ()=> toggleTransfersCard(false));
 
   document.getElementById("transferMoreBtn")?.addEventListener("click", ()=> renderTransfers(false));
   document.getElementById("transferLessBtn")?.addEventListener("click", ()=>{
